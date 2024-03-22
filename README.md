@@ -9,6 +9,8 @@ We consider thermal power stations with single-stage turbines. In the figure bel
 structure of a simple network of three areas is shown as an example along with measurable input
 and output variables. The term 𝑃𝑖𝑗 is function of the coupling between areas i and j.
 
+![Local Image](SISOgna_NW/Screenshot\2024-03-22\alle\10.39.39.png)
+
 Here we consider the dynamics of a PNS with five areas, where each area is endowed with primary
 control. The models are linearized around an equilibrium value. The state of area i consists of the
 vector 𝑥𝑖 = [Δ𝜃𝑖, Δ𝜔𝑖, Δ𝑃𝑚,𝑖, Δ𝑃𝑣,𝑖]^𝑇 (all variables are assumed measurable for simplicity), where:
@@ -24,6 +26,7 @@ the nominal value), can be described by the following model:
 where 𝑥 = [𝑥1', … , 𝑥5']'
 , 𝑢 = [𝑢1, … , 𝑢5]'
 , and where the system matrices are specified in the file.
+
 
 
 Problem:
