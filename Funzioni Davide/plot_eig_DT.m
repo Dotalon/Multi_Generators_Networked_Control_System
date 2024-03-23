@@ -1,4 +1,11 @@
 function plot_eig_DT(F, alpha, radius)
+% Plots the eigenvalues of matrix A in the discrete time case.
+% Inputs:
+% - A: System Matrix
+% - Alpha: Center of the disk region. If there is no input for alpha, it is set to 0. If there is no input for radius 
+%   alpha is the limit value for the spectral abscissa instead of the center of a disk
+% - Radius: Radius of of the disk region.
+
  if nargin < 2
      alpha = 0;
  end
@@ -24,18 +31,11 @@ eigenvaluesDT = eig(F);
     grid on 
     hold on
     plot(real(eigenvaluesDT), imag(eigenvaluesDT), '*')
-    disk = circle(-alpha,0,radius);
+    disk = circle(-1*alpha,0,radius);
     hold off
     title('Eigenvalues')
     xlabel('Re')
     ylabel('Im')
 
  end
-end
-function circle = circle(x,y,r)
-hold on
-th = 0:pi/50:2*pi;
-xunit = r * cos(th) + x;
-yunit = r * sin(th) + y;
-circle = plot(xunit, yunit);
 end

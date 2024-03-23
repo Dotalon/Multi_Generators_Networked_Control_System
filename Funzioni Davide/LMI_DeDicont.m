@@ -1,4 +1,4 @@
-function [K,rho,feas, B_total]=LMI_DeDicont(A,B,C,N,ContStruc, Mode, alpha, radius)
+function [K,rho,feas]=LMI_DeDicont(A,B,C,N,ContStruc, Mode, alpha, radius)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -20,7 +20,7 @@ function [K,rho,feas, B_total]=LMI_DeDicont(A,B,C,N,ContStruc, Mode, alpha, radi
 % - rho: spectral abscissa of matrix (A+B*K) - note that [C{1}',...,
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
-% - B_total: Matrix to calculate the eigenvalues of the closed loop (used for the plots)
+
 if Mode == 'CT'
     if nargin < 7
      alpha = 0;
@@ -75,7 +75,6 @@ end
     P=double(P);
 
     K=L/P;
-    B_total=Btot;
     rho=max(real(eig(A+Btot*K)));
 elseif Mode == 'DT'
     if nargin < 7
@@ -138,7 +137,6 @@ if radius==-1
     P=double(P);
 
     K=L/P;
-    B_total=Gtot;
     rho=max(abs(eig(F+Gtot*K)));
 else print('Mode not vailid, please use CT for continuous time or DT for Discrete time')
 end
