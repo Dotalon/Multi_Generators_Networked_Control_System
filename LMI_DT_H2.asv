@@ -18,11 +18,11 @@ function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
 
-Gtot=[];
+Btot=[];
 for i=1:N
     m(i)=size(G{i},2);
     n(i)=size(H{i},1);
-    Gtot=[Gtot,G{i}];
+    Btot=[Btot,G{i}];
 end
 ntot=size(F,1);        %20
 mtot=sum(m);           %5
@@ -60,7 +60,7 @@ S=sdpvar(ntot+mtot); %25x25
 Hh=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
 Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
-LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'    Gtot*L ; L'*Gtot'       P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[[P-F*P*F'-F*L'*G'-G*L*F'-Gw*Gw'    G*L ; L'*G'       P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
 
 options=sdpsettings('solver','sedumi');
 Obj=trace(S);
@@ -70,4 +70,4 @@ L=double(L);
 P=double(P);
 
 K2=L/P;
-rho2=max(real(eig(F+Gtot*K2)));
+rho2=max(real(eig(F+Btot*K2)));

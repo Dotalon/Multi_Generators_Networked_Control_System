@@ -147,6 +147,12 @@ rho_dt_cent
 feas_dt_cent
 
 %CT H2 gains
+[K_cent2,rho_cent2,feas_cent2]=LMI_CT_H2(A,Bdec,Cdec,N,ContStruc);
+rho_cent2
+feas_cent2
+[K_dt_cent2,rho_dt_cent2,feas_dt_cent2]=LMI_DT_H2(F,Gdec,Hdec,N,ContStruc);
+rho_dt_cent2
+feas_dt_cent2
 
 
 %% state-feedback Decentralized control structure

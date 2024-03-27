@@ -1,0 +1,237 @@
+% Power Network system
+% Marcello Farina, 19/12/2018
+% SISOgna_il_NW, --/04/2024
+
+clc
+clear all
+
+%%
+H1=12;      H2=10;      H3=8;       H4=8;       H5=10;
+R1=0.05;    R2=0.0625;  R3=0.08;    R4=0.08;    R5=0.05;
+D1=0.7;     D2=0.9;     D3=0.9;     D4=0.7;     D5=0.86;
+Tt1=0.65;   Tt2=0.4;    Tt3=0.3;    Tt4=0.6;    Tt5=0.8;
+Tg1=0.1;    Tg2=0.1;    Tg3=0.1;    Tg4=0.1;    Tg5=0.15;
+
+P12=0.001*4;  P21=P12;
+P23=0.001*2;  P32=P23;
+P34=0.001*2;  P43=P34;
+P45=0.001*3;  P54=P45;
+P25=0.001*3;  P52=P25;
+
+
+A11=[   0                               1               0               0;
+        -(1/(2*H1))*P12                 -D1/(2*H1)      1/(2*H1)        0;
+        0                               0               -1/Tt1          1/Tt1;
+        0                               -1/(R1*Tg1)     0               -1/Tg1];
+    
+A22=[   0                               1               0               0;
+        -(1/(2*H2))*(P21+P25+P23)       -D2/(2*H2)      1/(2*H2)        0;
+        0                               0               -1/Tt2          1/Tt2;
+        0                               -1/(R2*Tg2)     0               -1/Tg2];
+    
+A33=[   0                               1               0               0;
+        -(1/(2*H3))*(P32+P34)           -D3/(2*H3)      1/(2*H3)        0;
+        0                               0               -1/Tt3          1/Tt3;
+        0                               -1/(R3*Tg3)     0               -1/Tg3];
+    
+A44=[   0                               1               0               0;
+        -(1/(2*H4))*(P43+P45)           -D4/(2*H4)      1/(2*H4)        0;
+        0                               0               -1/Tt4          1/Tt4;
+        0                               -1/(R4*Tg4)     0               -1/Tg4];
+    
+A55=[   0                               1               0               0;
+        -(1/(2*H5))*(P52+P54)           -D5/(2*H5)      1/(2*H5)        0;
+        0                               0               -1/Tt5          1/Tt5;
+        0                               -1/(R5*Tg5)     0               -1/Tg5];
+
+B1=[0 0 0 1/Tg1]';
+B2=[0 0 0 1/Tg2]';
+B3=[0 0 0 1/Tg3]';
+B4=[0 0 0 1/Tg4]';
+B5=[0 0 0 1/Tg5]';
+
+A12=[   0   0   0   0;  P12/(2*H1)  0   0   0;  0   0   0   0;  0   0   0   0];
+A13=zeros(4,4);
+A14=zeros(4,4);
+A15=zeros(4,4);
+A21=[   0   0   0   0;  P21/(2*H2)  0   0   0;  0   0   0   0;  0   0   0   0];
+A23=[   0   0   0   0;  P23/(2*H2)  0   0   0;  0   0   0   0;  0   0   0   0];
+A24=zeros(4,4);
+A25=[   0   0   0   0;  P25/(2*H2)  0   0   0;  0   0   0   0;  0   0   0   0];
+A31=zeros(4,4);
+A32=[   0   0   0   0;  P32/(2*H3)  0   0   0;  0   0   0   0;  0   0   0   0];
+A34=[   0   0   0   0;  P34/(2*H3)  0   0   0;  0   0   0   0;  0   0   0   0];
+A35=zeros(4,4);
+A41=zeros(4,4);
+A42=zeros(4,4);
+A43=[   0   0   0   0;  P43/(2*H4)  0   0   0;  0   0   0   0;  0   0   0   0];
+A45=[   0   0   0   0;  P45/(2*H4)  0   0   0;  0   0   0   0;  0   0   0   0];
+A51=zeros(4,4);
+A52=[   0   0   0   0;  P52/(2*H5)  0   0   0;  0   0   0   0;  0   0   0   0];
+A53=zeros(4,4);
+A54=[   0   0   0   0;  P54/(2*H5)  0   0   0;  0   0   0   0;  0   0   0   0];
+
+C1=eye(4); 
+C2=eye(4);
+C3=eye(4);
+C4=eye(4);
+C5=eye(4);
+%Ctot is an identity! all states are measurable!
+
+% centralized model matrices:
+    
+A=[ A11 A12 A13 A14 A15;
+    A21 A22 A23 A24 A25;
+    A31 A32 A33 A34 A35;
+    A41 A42 A43 A44 A45;
+    A51 A52 A53 A54 A55];
+
+B=blkdiag(B1,B2,B3,B4,B5);
+C=blkdiag(C1,C2,C3,C4,C5);
+
+%% Decoupled and discretized model
+Bdec=[];
+Cdec=[];
+Hdec=[];
+Gdec=[];
+%in teoria la decompongo guardando la matrice A: osservo le interazioni fra
+%i vari sistemi in maniera tale da decidere come decomporre X vettore degli
+%stati n=4. 
+h=1;
+N=5;
+n_states=4;
+
+[F,G,H,L,h]=ssdata(c2d(ss(A,B,C,[]),h));
+
+
+for i=1:N
+    Bdec{i}=B(:,i);
+    Cdec{i}=C(n_states*(i-1)+1:n_states*i,:);
+    Gdec{i}=G(:,i);
+    Hdec{i}=H(n_states*(i-1)+1:n_states*i,:);
+end
+
+rounding_n=3;
+
+
+%% spectral abscissa and radius
+eigenvaluesCT = eig(A)
+spectral_abscissa = round(max(real(eig(A))),10)
+
+eigenvaluesDT = eig(F)
+spectral_radius = round(max(abs(eig(F))),10)
+
+%the system is simply stable as we have only one eig on the border (zero for CT , 1 for DT),
+%in both cases
+
+%% state-feedback centralized control structures
+rounding_n=3;
+ContStruc=ones(N,N);
+%[ 1 1 1 1 1
+%  1 1 1 1 1
+%  1 1 1 1 1
+%  1 1 1 1 1];  %centralized structure
+
+CFM=di_fixed_modes(A,Bdec,Cdec,N,ContStruc, rounding_n)
+%no fixed modes in Continuous
+DFM=di_fixed_modes(F,Gdec,Hdec,N,ContStruc, rounding_n)
+%no fixed modes in Discrete
+
+%Continuous Time stabilizing gains
+[K_cent,rho_cent,feas_cent]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc);
+rho_cent
+feas_cent
+%Discrete Time stabilizing gains
+[K_dt_cent,rho_dt_cent,feas_dt_cent]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc);
+rho_dt_cent
+feas_dt_cent
+
+%CT H2 gains
+[K_cent2,rho_cent2,feas_cent2]=LMI_CT_H2(A,Bdec,Cdec,N,ContStruc);
+rho_cent2
+feas_cent2
+[K_dt_cent2,rho_dt_cent2,feas_dt_cent2]=LMI_DT_H2(F,Gdec,Hdec,N,ContStruc);
+rho_dt_cent2
+feas_dt_cent2
+
+
+%% state-feedback Decentralized control structure
+rounding_n=3;
+ContStruc_dec=diag(ones(N,1));
+%[ 1 0 0 0 0
+%  0 1 0 0 0
+%  0 0 1 0 0
+%  0 0 0 1 0
+%  0 0 0 0 1];  %decentralized structure
+
+CFM_dec=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_dec, rounding_n)
+%no fixed modes in Continuous
+DFM_dec=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_dec, rounding_n)
+%no fixed modes in Discrete
+
+%Continuous Time gains
+[K_dec,rho_dec,feas_dec]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_dec);
+K_dec
+rho_dec
+feas_dec
+
+%Discrete Time gains
+[K_dt_dec,rho_dt_dec,feas_dt_dec]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc_dec);
+K_dt_dec
+rho_dt_dec
+feas_dt_dec
+
+%% state-feedback distributed control structures
+%Bidirectional star topology
+ContStruc_BiStar= [ 1 1 1 1 1
+                    1 1 0 0 0
+                    1 0 1 0 0
+                    1 0 0 1 0
+                    1 0 0 0 1];
+
+CFM_BiStar=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_BiStar, rounding_n)
+%no fixed modes in Continuous
+DFM_BiStar=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_BiStar, rounding_n)
+%no fixed modes in Discrete
+
+%Continuous Time gains
+[K_BiStar,rho_BiStar,feas_BiStar]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_BiStar);
+K_BiStar
+rho_BiStar
+feas_BiStar
+
+%Discrete Time gains
+[K_dt_BiStar,rho_dt_BiStar,feas_dt_BiStar]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc_BiStar);
+K_dt_BiStar
+rho_dt_BiStar
+feas_dt_BiStar
+
+
+%% ACazzoDeCane topology
+ContStruc_Acazz= [ 1 0 1 0 0
+                   1 1 0 1 0
+                   0 0 1 0 1
+                   1 0 0 1 0
+                   0 0 1 0 1];
+
+CFM_Acazz=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_Acazz, rounding_n)
+%no fixed modes in Continuous
+DFM_Acazz=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_Acazz, rounding_n)
+%no fixed modes in Discrete
+
+%Continuous Time gains
+[K_Acazz,rho_Acazz,feas_Acazz]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_Acazz);
+K_Acazz
+rho_Acazz
+feas_Acazz
+
+%Discrete Time gains
+[K_dt_Acazz,rho_dt_Acazz,feas_dt_Acazz]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc_Acazz);
+K_dt_Acazz
+rho_dt_Acazz
+feas_dt_Acazz
+
+%%
+[ContStruc,K,best_rho,feas]=Optimize_ConStruc(A,Bdec,Cdec,N);
+ContStruc
+best_rho

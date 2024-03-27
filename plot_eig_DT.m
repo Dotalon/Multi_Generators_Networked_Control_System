@@ -1,7 +1,7 @@
 function plot_eig_DT(F, alpha, radius)
-% Plots the eigenvalues of matrix A in the discrete time case.
+% Plots the eigenvalues of matrix F in the discrete time case.
 % Inputs:
-% - A: System Matrix
+% - F: System Matrix
 % - Alpha: Center of the disk region. If there is no input for alpha, it is set to 0. If there is no input for radius 
 %   alpha is the limit value for the spectral abscissa instead of the center of a disk
 % - Radius: Radius of of the disk region.

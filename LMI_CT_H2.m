@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_CT_H2(A,B,Ch,N,ContStruc)
+function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -21,7 +21,7 @@ function [K2,rho2,feas2]=LMI_CT_H2(A,B,Ch,N,ContStruc)
 Btot=[];
 for i=1:N
     m(i)=size(B{i},2);
-    n(i)=size(Ch{i},1);
+    n(i)=size(C{i},1);
     Btot=[Btot,B{i}];
 end
 ntot=size(A,1);        %20 total number of states
@@ -60,7 +60,7 @@ S=sdpvar(ntot+mtot);
 Ch=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
 Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
-LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S            Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S       Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
 options=sdpsettings('solver','sedumi');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   
