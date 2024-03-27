@@ -50,12 +50,9 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
-alpha=-0.5;
 
 LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sedumi');
-%Obj=norm(L,2)
 J=optimize(LMIconstr,[],options);
 feas=J.problem;
 L=double(L);
