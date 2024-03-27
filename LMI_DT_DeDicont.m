@@ -52,12 +52,12 @@ else
 end
 
 LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F' Gtot*L;
-    L'*Gtot' P]>=1e-2*eye(ntot*2)];
+    L'*Gtot' P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
 %options=sdpsettings('solver','sedumi');
 J=optimize(LMIconstr);%,[],options);
 feas=J.problem;
 L=double(L);
 P=double(P);
 
-K=L*P; i think its /
+K=L/P; %i think its /
 rho=max(abs(eig(F+Gtot*K)));

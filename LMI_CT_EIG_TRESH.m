@@ -51,7 +51,7 @@ else
     end  
 end
 % N=[]
-alpha=5;
+alpha=1.4;
 
 LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+2*alpha*Y<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sedumi');

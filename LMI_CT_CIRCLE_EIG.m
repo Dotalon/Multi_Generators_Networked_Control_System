@@ -51,13 +51,14 @@ else
     end  
 end
 % N=[]
-alpha=5;
-r=4;
+alpha=2;
+r=0.6;
 
 % LMIconstr=[[(r^2-alpha^2)*P-A*P*A'-A*L'*Btot'-Btot*L*A'-alpha*(A*P+P*A'+Btot*L+L'*Btot')    Btot*L;
 %             L'*Btot'    P]>=1e-2*eye(ntot*2)];
+
 LMIconstr=[[(r^2-alpha^2)*P-alpha*(A*P+P*A'+Btot*L+L'*Btot')  A*P+Btot*L;
-            (A*P+Btot*L)'  P]>=1e-2*eye(ntot*2)];
+            (A*P+Btot*L)'  P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sedumi');
 % [P>=1e-2*eye(ntot)];
 %Obj=norm(L,2);
