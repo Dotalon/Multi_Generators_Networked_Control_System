@@ -137,15 +137,16 @@ CFM=di_fixed_modes(A,Bdec,Cdec,N,ContStruc, rounding_n)
 DFM=di_fixed_modes(F,Gdec,Hdec,N,ContStruc, rounding_n)
 %no fixed modes in Discrete
 
-%Continuous Time gains
+%Continuous Time stabilizing gains
 [K_cent,rho_cent,feas_cent]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc);
 rho_cent
 feas_cent
-
-%Discrete Time gains
+%Discrete Time stabilizing gains
 [K_dt_cent,rho_dt_cent,feas_dt_cent]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc);
 rho_dt_cent
 feas_dt_cent
+
+%CT H2 gains
 
 
 %% state-feedback Decentralized control structure
