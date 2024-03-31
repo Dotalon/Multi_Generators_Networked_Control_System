@@ -88,6 +88,7 @@ A=[ A11 A12 A13 A14 A15;
 B=blkdiag(B1,B2,B3,B4,B5);
 C=blkdiag(C1,C2,C3,C4,C5);
 D=zeros(20,5);
+N_dt = zeros(20,5);
 %% Decoupled and discretized model
 Bdec=[];
 Cdec=[];
@@ -113,12 +114,12 @@ end
 eigenvaluesCT = eig(A)
 spectral_abscissa = round(max(real(eig(A))),10)
 
-plot_eig_CT(A, 0, -1)
+% plot_eig_CT(A, 0, -1)
 
 eigenvaluesDT = eig(F)
 spectral_radius = round(max(abs(eig(F))),10)
 
-plot_eig_DT(F ,0, -1)
+% plot_eig_DT(F ,0, -1)
 
 %the system is simply stable as we have only one eig on the border [zero for CT (but one is really close to 0), 1 for DT],
 %in both cases
@@ -143,109 +144,124 @@ ContStrucDe=diag(ones(N,1));
 ContStrucDi=[ 1 1 0 0 0
               1 1 1 0 1
               0 1 1 1 0
+              0 1 0 1 1
               0 1 0 1 1];
-[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDe, rounding_n)
-[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n)
+[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n)
+[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n)
 
+[K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
+sys_ss_CT=ss(A+B*K_C_CT, B, C, D);
+sys_CT=tf(sys_ss_CT);
+bode(sys_CT)
+[mag_CT,phase_CT,w_CT] = bode(sys_CT);
+h_CT=hinfnorm(sys_CT)
 
-%% Decentralized Control
-% Continuous-time Stability
-[K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT');
-spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
-plot_eig_CT(A+B*K_De_C)
-K_De_C_Stability = K_De_C;
-% Continuous-time alpha-Stability
-alpha = input("Value of alpha (positive):")
-[K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT', alpha);
-spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
-plot_eig_CT(A+B*K_De_C, alpha)
-K_De_C_Alpha_Stability =K_De_C;
-% Continuous-time Eigenvalues in a disk (alpha=0 for limitations on spectral radius)
-alpha = input("Value of alpha (positive):")
-radius = input("Value of radius (positive):")
-[K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT', alpha, radius);
-spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
-plot_eig_CT(A+B*K_De_C, alpha, radius)
-K_De_C_Disk = K_De_C;
-% Discrete-time stability
-[K_De_DT,rho_De_DT,feas_De_DT]=LMI_DeDicont(F,Gdec,Hdec,N,ContStrucDe, 'DT');
-spectral_radius_rho = round(max(abs(eig(F+G*K_De_DT))),10)
-plot_eig_DT(F+G*K_De_DT)
-K_De_DT_Stability = K_De_DT;
-% Discrete-time Eigenvalues in a disk (alpha=0 for limitations on spectral radius)
-alpha = input("Value of alpha (positive):")
-radius = input("Value of radius (positive):")
-[K_De_DT,rho_De_DT,feas_De_DT]=LMI_DeDicont(F,Gdec,Hdec,N,ContStrucDe, 'DT', alpha, radius);
-spectral_radius_rho = round(max(abs(eig(F+G*K_De_DT))),10)
-plot_eig_DT(F+G*K_De_DT, alpha, radius)
-K_De_DT_Disk = K_De_DT;
-%%
-%%%%%%%%%%%%%
-%   Plots   %
-%%%%%%%%%%%%%
+[K_C_DT,rho_C_DT,feas_C_DT]=LMI_DT_DeDicont_Hinf(F,Gdec,Hdec,N,ContStrucC);
+sys_ss_DT=ss(F+G*K_C_DT, G, H, N_dt);
+sys_DT=tf(sys_ss_DT);
+bode(sys_DT)
+[mag_DT,phase_DT,w_DT] = bode(sys_DT);
+h_DT=hinfnorm(sys_DT)
 
-j = input('Which K_De_C do you want to use? (1 for Stability, 2 for Alpha stability, 3 for Disk)')
-if j == 1
-    K_De_C = K_De_C_Stability;
-elseif j == 2
-    K_De_C = K_De_C_Alpha_Stability;
-elseif j == 3
-    K_De_C = K_De_C_Disk;
-end
-
-j = input('Which K_De_DT do you want to use? (1 for Stability, 2 for Disk)')
-
-if j == 1
-    K_De_DT = K_De_DT_Stability;
-elseif j == 2
-    K_De_DT = K_De_DT_Disk;
-end
-Gtot=[];
-Htot=[];
-Btot=[];
-Ctot=[];
-for i=1:N
-    Btot=[Btot,Bdec{i}];
-    Ctot=[Ctot
-        Cdec{i}];
-    Gtot=[Gtot,Gdec{i}];
-    Htot=[Htot
-        Hdec{i}];
-end
-
-% simulation data
-Tfinal=6;
-T=[0:0.01:Tfinal];
-x0=[];
-for i=1:N
-    x0=[x0;randn(n_states,1)];
-end
-Atot = A;
-Ftot = F;
-k=0;
-for t=T
-    k=k+1;
-    x_De_C(:,k)=expm((Atot+Btot*K_De_C)*t)*x0;
-end
-for k=1:Tfinal/h
-    x_De_DT(:,k)=((Ftot+Gtot*K_De_DT)^k)*x0;
-end
-for v=1:n_states
-    switch v
-        case 1
-            state = '\Delta\theta_{'
-            plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
-        case 2
-            state = '\Delta\omega_{'
-            plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
-        case 3
-            state = '\DeltaP_{m,'
-            plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
-        case 4
-            state = '\DeltaP_{v,'
-            plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
-    end
-end
+% 
+% %% Decentralized Control
+% % Continuous-time Stability
+% [K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT');
+% spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
+% plot_eig_CT(A+B*K_De_C)
+% K_De_C_Stability = K_De_C;
+% % Continuous-time alpha-Stability
+% alpha = input("Value of alpha (positive):")
+% [K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT', alpha);
+% spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
+% plot_eig_CT(A+B*K_De_C, alpha)
+% K_De_C_Alpha_Stability =K_De_C;
+% % Continuous-time Eigenvalues in a disk (alpha=0 for limitations on spectral radius)
+% alpha = input("Value of alpha (positive):")
+% radius = input("Value of radius (positive):")
+% [K_De_C,rho_De_C,feas_De_C]=LMI_DeDicont(A,Bdec,Cdec,N,ContStrucDe, 'CT', alpha, radius);
+% spectral_abscissa_alpha = round(max(real(eig(A+B*K_De_C))),10)
+% plot_eig_CT(A+B*K_De_C, alpha, radius)
+% K_De_C_Disk = K_De_C;
+% % Discrete-time stability
+% [K_De_DT,rho_De_DT,feas_De_DT]=LMI_DeDicont(F,Gdec,Hdec,N,ContStrucDe, 'DT');
+% spectral_radius_rho = round(max(abs(eig(F+G*K_De_DT))),10)
+% plot_eig_DT(F+G*K_De_DT)
+% K_De_DT_Stability = K_De_DT;
+% % Discrete-time Eigenvalues in a disk (alpha=0 for limitations on spectral radius)
+% alpha = input("Value of alpha (positive):")
+% radius = input("Value of radius (positive):")
+% [K_De_DT,rho_De_DT,feas_De_DT]=LMI_DeDicont(F,Gdec,Hdec,N,ContStrucDe, 'DT', alpha, radius);
+% spectral_radius_rho = round(max(abs(eig(F+G*K_De_DT))),10)
+% plot_eig_DT(F+G*K_De_DT, alpha, radius)
+% K_De_DT_Disk = K_De_DT;
+% %%
+% %%%%%%%%%%%%%
+% %   Plots   %
+% %%%%%%%%%%%%%
+% 
+% j = input('Which K_De_C do you want to use? (1 for Stability, 2 for Alpha stability, 3 for Disk)')
+% if j == 1
+%     K_De_C = K_De_C_Stability;
+% elseif j == 2
+%     K_De_C = K_De_C_Alpha_Stability;
+% elseif j == 3
+%     K_De_C = K_De_C_Disk;
+% end
+% 
+% j = input('Which K_De_DT do you want to use? (1 for Stability, 2 for Disk)')
+% 
+% if j == 1
+%     K_De_DT = K_De_DT_Stability;
+% elseif j == 2
+%     K_De_DT = K_De_DT_Disk;
+% end
+% Gtot=[];
+% Htot=[];
+% Btot=[];
+% Ctot=[];
+% for i=1:N
+%     Btot=[Btot,Bdec{i}];
+%     Ctot=[Ctot
+%         Cdec{i}];
+%     Gtot=[Gtot,Gdec{i}];
+%     Htot=[Htot
+%         Hdec{i}];
+% end
+% 
+% % simulation data
+% Tfinal=6;
+% T=[0:0.01:Tfinal];
+% x0=[];
+% for i=1:N
+%     x0=[x0;randn(n_states,1)];
+% end
+% Atot = A;
+% Ftot = F;
+% k=0;
+% for t=T
+%     k=k+1;
+%     x_De_C(:,k)=expm((Atot+Btot*K_De_C)*t)*x0;
+% end
+% for k=1:Tfinal/h
+%     x_De_DT(:,k)=((Ftot+Gtot*K_De_DT)^k)*x0;
+% end
+% for v=1:n_states
+%     switch v
+%         case 1
+%             state = '\Delta\theta_{'
+%             plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
+%         case 2
+%             state = '\Delta\omega_{'
+%             plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
+%         case 3
+%             state = '\DeltaP_{m,'
+%             plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
+%         case 4
+%             state = '\DeltaP_{v,'
+%             plot_freemotion(N,v,state, T, x_De_C, x_De_DT, x0, h, Tfinal)
+%     end
+% end
 %% Functions
 % 
 % function [K,rho,feas]=LMI_DeDicont(A,B,C,N,ContStruc, Mode, alpha, radius)
