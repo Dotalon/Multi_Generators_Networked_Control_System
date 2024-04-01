@@ -18,11 +18,11 @@ function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
 
-Btot=[];
+Gtot=[];
 for i=1:N
     m(i)=size(G{i},2);
     n(i)=size(H{i},1);
-    Btot=[Btot,G{i}];
+    Gtot=[Gtot,G{i}];
 end
 ntot=size(F,1);        %20
 mtot=sum(m);           %5
@@ -34,7 +34,7 @@ if ContStruc==ones(N,N)
     P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
 
-    Gw=rand([20,5]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
+    Gw=rand([20,1]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
     
     S=sdpvar(ntot+mtot);
 
@@ -67,8 +67,8 @@ end
 % N=[]
 
 
-LMIconstr=[[P-F*P*F'-F*L'*G'-G*L*F'-Gw*Gw'   G*L;
-            L'*G'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'   Gtot*L;
+            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
 
 options=sdpsettings('solver','sedumi');
 Obj=trace(S);
@@ -78,4 +78,4 @@ L=double(L);
 P=double(P);
 
 K2=L/P;
-rho2=max(real(eig(F+Btot*K2)));
+rho2=max(real(eig(F+Gtot*K2)));

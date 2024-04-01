@@ -123,118 +123,277 @@ ContStrucC=ones(N,N);
 %  1 1 1 1 1
 %  1 1 1 1 1
 %  1 1 1 1 1];  %centralized structure
-[CFMC]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucC, rounding_n)
-[DFMC]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucC, rounding_n)
+[CFMC]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucC, rounding_n) % no centralized fixed modes CT
+[DFMC]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucC, rounding_n) % no centralized fixed modes DT
 
-% no centralized fixed modes
-
-%% Apply control gains for stability only
 [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
-[K_c_DT,rho_c_DT,feas_c_DT]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStrucC);
-eig(F+G*K_c_DT)
-%% alpha-stability
 [K_c2,rho_c2,feas_c2]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-
-[K_c2_DT,rho_c2_DT,feas_c2_DT]=LMI_DT_EIG_CIRCLE(F,Gdec,Hdec,N,ContStrucC);
-
-
-%% Confine eigs in a circle 
 [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+[K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
+[K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm
 
-%[eigenvalues_wrong] = eig(A+B*K_c3);
-%plot([eigenvalues_wrong])
+%Can't make Hinf work
 
-%No discrete time cause it doesn't make sense
+%% decentralized fixed modes
+ContStrucDe=diag(ones(N,1));
+[CFMDe]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDe, rounding_n) %No decentralized FM CT =NO FM in general
+[DFMDe]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n) %No dec FM DT
 
-%% Confine eigs in region WORKS
-[K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC);
+%Same LMIs as before
+[K_c_DE,rho_c_DE,feas_c_DE]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDe);
+[K_c2_DE,rho_c2_DE,feas_c2_DE]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDe);
+[K_c3_DE,rho_c3_DE,feas_c3_DE]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucDe);
+[K_c4_DE,rho_c4_DE,feas_c4_DE]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDe);
+[K_c5_DE,rho_c5_DE,feas_c5_DE]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDe);
 
-%No discrete time cause it doesn't make sense
 
-%% H2 norm minimization
-[K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC);
+%% distributed fixed modes
+ContStrucDi=[ 1 1 0 0 0
+              1 1 1 0 1
+              0 1 1 1 0
+              0 0 1 1 1
+              0 1 0 1 1];
+[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n) %as expected since no decentralized
+[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n) %as expected
 
-[K_c5_DT,rho_c5_DT,feas_c5_DT]=LMI_CT_H2(F,Gdec,Hdec,N,ContStrucC);
-%% 
-Tfinal=25;
+%Same LMIs as before
+[K_c_Di,rho_c_Di,feas_c_Di]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDi);
+[K_c2_Di,rho_c2_Di,feas_c2_Di]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDi);
+[K_c3_Di,rho_c3_Di,feas_c3_Di]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucDi);
+[K_c4_Di,rho_c4_Di,feas_c4_Di]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi);
+[K_c5_Di,rho_c5_Di,feas_c5_Di]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi);
+
+
+% %% Apply control gains for stability only
+% [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
+% [K_c_DT,rho_c_DT,feas_c_DT]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStrucC);
+% eig(F+G*K_c_DT)
+% 
+% %% alpha-stability
+% [K_c2,rho_c2,feas_c2]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
+% 
+% [K_c2_DT,rho_c2_DT,feas_c2_DT]=LMI_DT_EIG_CIRCLE(F,Gdec,Hdec,N,ContStrucC);
+% 
+% 
+% %% Confine eigs in a circle 
+% [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+% 
+% %[eigenvalues_wrong] = eig(A+B*K_c3);
+% %plot([eigenvalues_wrong])
+% 
+% %No discrete time cause it doesn't make sense
+% 
+% %% Confine eigs in region WORKS
+% [K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC);
+% 
+% %No discrete time cause it doesn't make sense
+% 
+% %% H2 norm minimization
+% [K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC);
+% 
+% % [K_c5_DT,rho_c5_DT,feas_c5_DT]=LMI_DT_H2(F,Gdec,Hdec,N,ContStrucC);
+% 
+% 
+% %% Hinf non funziona, serve guardare
+% [K_c6,rho_c6,feas_c6]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
+% 
+
+
+%% don't actually know why this part is here but I'm scared of deleting it
+Gtot=[];
+Htot=[];
+Btot=[];
+Ctot=[];
+for i=1:N
+    Btot=[Btot,Bdec{i}];
+    Ctot=[Ctot
+        Cdec{i}];
+    Gtot=[Gtot,Gdec{i}];
+    Htot=[Htot
+        Hdec{i}];
+end
+
+
+
+%% simulation
+%   Display on every figure 3 cols: centralized, decentralized and distributed
+%   schemes, for now in continuous time (CT)
+
+Tfinal=45;
 T=[0:0.01:Tfinal];
 x0=[];
 for i=1:N
-    x0=[x0;randn(n_states,1)];     %I think random col vector of initial states
+    x0=[x0;randn(n_states,1)];     %random col vector of initial states
 end
 
 k=0;
 for t=T
     k=k+1;
+    
+    % equations of centralized free movement
     x_c(:,k)=expm((A+B*K_c)*t)*x0;
     x_alpha_stab(:,k)=expm((A+B*K_c2)*t)*x0;
     x_disc(:,k)=expm((A+B*K_c3)*t)*x0;
     x_region(:,k)=expm((A+B*K_c4)*t)*x0;
     x_H2(:,k)=expm((A+B*K_c5)*t)*x0;
+    
+    % equations of decentralized free movement
+    x_simple_stab_DE(:,k)=expm((A+B*K_c_DE)*t)*x0;
+    x_alpha_stab_DE(:,k)=expm((A+B*K_c2_DE)*t)*x0;
+    x_disc_DE(:,k)=expm((A+B*K_c3_DE)*t)*x0;
+    x_region_DE(:,k)=expm((A+B*K_c4_DE)*t)*x0;
+    x_H2_DE(:,k)=expm((A+B*K_c5_DE)*t)*x0;
+    
+    % equations of distributed free movement
+    x_simple_stab_Di(:,k)=expm((A+B*K_c_Di)*t)*x0;
+    x_alpha_stab_Di(:,k)=expm((A+B*K_c2_Di)*t)*x0;
+    x_disc_Di(:,k)=expm((A+B*K_c3_Di)*t)*x0;
+    x_region_Di(:,k)=expm((A+B*K_c4_Di)*t)*x0;
+    x_H2_Di(:,k)=expm((A+B*K_c5_Di)*t)*x0;
 end
-for k=1:Tfinal/h
-    %x_c_DT(:,k)=expm((F+G*K_c_DT)*t)*x0;
-    x_c_DT(:,k)=((F+G*K_c_DT)^k)*x0;
-end
+
+%%CODE TO USE FOR DT
+% for k=1:Tfinal/h
+% %     x_c_DT(:,k)=expm((F+G*K_c_DT)^k)*x0;
+%     x_c_DT(:,k)=((F+G*K_c_DT)^k)*x0;
+%     x_circle_DT(:,k)=((F+G*K_c2_DT)^k)*x0;
+% 
+% end
+
+%     subplot(N,2,2*(i))            copy this code when doing CentralizedDT
+%     hold on
+%     grid on
+%     title(['\speed_DT{',num2str(i),'}'])
+%     plot([0:h:Tfinal-1],[x_circle_DT((i)*4-2,:)],'k')
+%% Plot of the movements for every control law used (simple stability, alpha-stab,ecc) 
 
 figure
 for i=1:N
-    subplot(N,2,2*(i-1)+1)
+    subplot(N,3,1+(3*(i-1)))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_c((i)*4-2,:)],'k')
+    legend('Simple stab CENTR CT')
 
-%     subplot(N,2,2*(i))
-%     hold on
-%     grid on
-%     title(['\speed_DT{',num2str(i),'}'])
-%     plot([0:h:Tfinal],[x_c_DT((i)*4-2,:)],'k')    
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_DE{',num2str(i),'}'])
+    plot(T,[x_simple_stab_DE((i)*4-2,:)],'k')
+    legend('simple stab DE CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_Di{',num2str(i),'}'])
+    plot(T,[x_simple_stab_Di((i)*4-2,:)],'k')
+    legend('simple stab Di CT')
+   
 end
-
-legend('Centralized only stability CT','Centralized only stability DT')
-%% 
 
 figure 
 for i=1:N
-    subplot(N,2,2*(i-1)+1)
+    subplot(N,3,1+(3*(i-1)))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_alpha_stab((i)*4-2,:)],'k')
-end
-legend('Centralized alpha stability')
+    legend('Alpha stab CENTR CT')
 
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_DE{',num2str(i),'}'])
+    plot(T,[x_alpha_stab_DE((i)*4-2,:)],'k')
+    legend('Alpha stab DE CT')
+    
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_Di{',num2str(i),'}'])
+    plot(T,[x_alpha_stab_Di((i)*4-2,:)],'k')
+    legend('alpha stab Di CT')
+
+end
 
 figure
 for i=1:N
-    subplot(N,2,2*(i-1)+1)
+    subplot(N,3,1+3*(i-1))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_disc((i)*4-2,:)],'k')
+    legend('Eig in disc CENTR CT')
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_DE{',num2str(i),'}'])
+    plot(T,[x_disc_DE((i)*4-2,:)],'k')
+    legend('Eig in disc DE CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_Di{',num2str(i),'}'])
+    plot(T,[x_disc_Di((i)*4-2,:)],'k')
+    legend('eig in disc Di CT')
 end
-legend('Centralized disc')
+
 
 figure
 for i=1:N
-    subplot(N,2,2*(i-1)+1)
+    subplot(N,3,1+3*(i-1))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_region((i)*4-2,:)],'k')
+    legend('Eig in region CENTR CT')
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_DE{',num2str(i),'}'])
+    plot(T,[x_region_DE((i)*4-2,:)],'k')
+    legend('eig in region DE CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_Di{',num2str(i),'}'])
+    plot(T,[x_region_Di((i)*4-2,:)],'k')
+    legend('eig in region Di CT')
 end
-legend('Eig in region sector')
+
 
 figure
 for i=1:N
-    subplot(N,2,2*(i-1)+1)
+    subplot(N,3,1+(3*(i-1)))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_H2((i)*4-2,:)],'k')
+    legend('H2 centr')
+
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_DE{',num2str(i),'}'])
+    plot(T,[x_H2_DE((i)*4-2,:)],'k')
+    legend('H2 DE CT')
+    
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['\speed_Di{',num2str(i),'}'])
+    plot(T,[x_H2_Di((i)*4-2,:)],'k')
+    legend('H2 Di CT')
 end
-legend('H2 norm minimization')
+
+
+
 
 
 
@@ -242,6 +401,11 @@ legend('H2 norm minimization')
 ContStrucDe=diag(ones(N,1));
 [CFMDe]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDe, rounding_n)
 [DFMDe]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n)
+
+[K_c_DE,rho_c_DE,feas_c_DE]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDe);
+[K_c2_DE,rho_c2_DE,feas_c2_DE]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDe);
+[K_c5_DE,rho_c5_DE,feas_c5_DE]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDe);
+
 
 %% distributed fixed modes
 ContStrucDi=[ 1 1 0 0 0

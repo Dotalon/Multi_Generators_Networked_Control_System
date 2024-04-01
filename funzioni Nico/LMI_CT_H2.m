@@ -34,9 +34,9 @@ if ContStruc==ones(N,N)
     Y=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
 
-    Bw=rand([20,5]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
+    Bw=rand([20,1]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
     
-    S=sdpvar(ntot+mtot);
+    S=sdpvar(ntot+mtot); %25x25
 
     Ch=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
     Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
@@ -51,6 +51,15 @@ else
     % Decentralized/distributed design
     Y=[];
     L=sdpvar(mtot,ntot);
+
+    Bw=rand([20,1]); %hopefully same thing as before
+
+    S=sdpvar(ntot+mtot); %25x25
+
+    Ch=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
+    Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+
+
     minc=0;
     for i=1:N
         Y=blkdiag(Y,sdpvar(n(i)));
