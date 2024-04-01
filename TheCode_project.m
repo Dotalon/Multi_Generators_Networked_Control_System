@@ -163,6 +163,7 @@ ContStrucDi=[ 1 1 0 0 0
 [K_c4_Di,rho_c4_Di,feas_c4_Di]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi);
 [K_c5_Di,rho_c5_Di,feas_c5_Di]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi);
 
+%RIMASUGLI DI QUELLO CHE AVEVO FATTO PRIMA, CREDO DA ELIMINARE
 
 % %% Apply control gains for stability only
 % [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
