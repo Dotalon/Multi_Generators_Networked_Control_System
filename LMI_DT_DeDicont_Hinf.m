@@ -1,11 +1,11 @@
-function [K,rho,feas]=LMI_DT_DeDicont(F,G,H,N,ContStruc)
-% Computes, using LMIs, the distributed "state feedback" control law for the discrete-time system, with reference to the control
+function [K,rho,feas]=LMI_CT_DeDicont_Hinf(F,G,H,N,ContStruc)
+% Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
 % Inputs:
 % - F: system matrix.
 % - G: input matrices (i.e., G{1},..., G{N} are the input matrices of the decomposed system, one for each channel).
-% - H: output matrices  (i.e., H{1},..., H{N} are the output matrices of the decomposed system, one for each channel, where [Hdec{1}',...,
+% - H: output matrices  (i.e., H{1},..., h{N} are the output matrices of the decomposed system, one for each channel, where [Hdec{1}',...,
 % Hdec{N}']=I).
 % - N: number of subsystems.
 % - ContStruc: NxN matrix that specifies the information structure
@@ -14,7 +14,7 @@ function [K,rho,feas]=LMI_DT_DeDicont(F,G,H,N,ContStruc)
 %
 % Output:
 % - K: structured control gain
-% - rho: spectral radius of matrix (F+G*K) - note that [H{1}',...,
+% - rho: spectral abscissa of matrix (F+G*K) - note that [H{1}',...,
 % H{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
 
@@ -27,7 +27,7 @@ end
 ntot=size(F,1);
 mtot=sum(m);
 
-gamma_max = 100;
+gamma_max = 1e3;
 gamma_min = 0.1;
 
 Gw = rand([20,20]);
@@ -43,7 +43,7 @@ if ContStruc==ones(N,N)
     P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
 else
-    % Dentralized/distributed design
+    % Decentralized/distributed design
     P=[];
     L=sdpvar(mtot,ntot);
     minc=0;
@@ -57,30 +57,34 @@ else
             ninc=ninc+n(j);
         end
         minc=minc+m(i);
-    end
+    end  
 end
 
-while(true)
-    if [(gamma_max-gamma_min)/gamma_min]<1e-6
-        gamma_test = (gamma_max+gamma_min/2);
+while(true)                                          % while is used to find the minimum gamma (https://www.youtube.com/watch?v=ah4FIabnTzg&t=1192s&ab_channel=ArtCell)
+    if [(gamma_max-gamma_min)/gamma_min]<1e-3
+        gamma_test = (gamma_max+gamma_min)/2;
         gamma_test
-        break
+        break;
     end
-   gamma_test = gamma_max + gamma_min/2;
-   LMIconstr = [[P  F*P+Gtot*L  Gw  zeros(20,25);
-           P*F'+L'*Gtot'  P  zeros(20,20)  P*Hh'+L'*Nu';
-           Gw'  zeros(20)  gamma_test*eye(ntot)  Nw';
-           zeros(25, 20)  Hh*P+Nu*L  Nw   gamma_test*eye(ntot+mtot)]>=1e-6*eye(ntot*4+mtot)];
-   ops = sdpsettings('solver', 'sedumi');
-   sol = optimize(LMIconstr, [], ops);
+   gamma_test = (gamma_max + gamma_min)/2;
 
-   if (sol.problem==1)
+   LMIconstr = [[P  F*P+Gtot*L  Gw  zeros(20,25);
+           P*F'+L'*Gtot'  P  zeros(20)  P*Hh'+L'*Nu';
+           Gw'  zeros(20)  gamma_test*eye(ntot)  Nw';
+           zeros(25, 20)  Hh*P+Nu*L  Nw   gamma_test*eye(ntot+mtot)]>=1e-2*eye(ntot*4+mtot)]+[P>=1e-2*eye(ntot)];
+options=sdpsettings('solver','sdpt3');
+sol = optimize(LMIconstr,[],options);
+ 
+if (sol.problem==1)
        disp('Infeasible');
        gamma_min = gamma_test;
-   else
+    elseif (sol.problem==0)
        disp('Feasible')
        gamma_max = gamma_test;
-   end
+    else
+        disp('Numerical Error')
+        break;
+     end
 end
 
 feas=sol.problem;
@@ -88,4 +92,4 @@ L=double(L);
 P=double(P);
 
 K=L/P;
-rho=max(abs(eig(F+Gtot*K)));
+rho=max(real(eig(F+Gtot*K)));

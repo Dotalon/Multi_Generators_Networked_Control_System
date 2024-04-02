@@ -27,7 +27,7 @@ end
 ntot=size(A,1);
 mtot=sum(m);
 
-gamma_max = 100;
+gamma_max = 1e3;
 gamma_min = 0.1;
 
 Bw = rand([20,20]);
@@ -61,25 +61,29 @@ else
 end
 
 while(true)                                          % while is used to find the minimum gamma (https://www.youtube.com/watch?v=ah4FIabnTzg&t=1192s&ab_channel=ArtCell)
-    if [(gamma_max-gamma_min)/gamma_min]<1e-2
-        gamma_test = (gamma_max+gamma_min/2);
+    if [(gamma_max-gamma_min)/gamma_min]<1e-3
+        gamma_test = (gamma_max+gamma_min)/2;
         gamma_test
-        break
+        break;
     end
-   gamma_test = gamma_max + gamma_min/2;
+   gamma_test = (gamma_max + gamma_min)/2;
+
 LMIconstr=[[Y*A'+A*Y+Btot*L+L'*Btot',  Bw,  Y*Ch'+L'*Du';
             Bw',  -gamma_test*eye(ntot),  Dw';
-            Ch*Y+Du*L,  Dw,  -gamma_test*eye(25)]<=1e-6*eye(65)]+[Y>=1e-6*eye(ntot)];
+            Ch*Y+Du*L,  Dw,  -gamma_test*eye(ntot+mtot)]<=1e-2*eye(3*ntot+mtot)]+[Y>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sdpt3');
 sol = optimize(LMIconstr,[],options);
  
 if (sol.problem==1)
        disp('Infeasible');
        gamma_min = gamma_test;
-   else
+    elseif (sol.problem==0)
        disp('Feasible')
        gamma_max = gamma_test;
-   end
+    else
+        disp('Numerical Error')
+        break;
+    end
 end
 
 feas=sol.problem;

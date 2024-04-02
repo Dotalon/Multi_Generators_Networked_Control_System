@@ -87,8 +87,8 @@ A=[ A11 A12 A13 A14 A15;
 
 B=blkdiag(B1,B2,B3,B4,B5);
 C=blkdiag(C1,C2,C3,C4,C5);
-D=zeros(20,5);
-N_dt = zeros(20,5);
+sys=ss(A,B,C,[]);
+h_std=norm(sys,Inf)
 %% Decoupled and discretized model
 Bdec=[];
 Cdec=[];
@@ -150,17 +150,20 @@ ContStrucDi=[ 1 1 0 0 0
 [DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n)
 
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
-sys_ss_CT=ss(A+B*K_C_CT, B, C, D);
+sys_ss_CT=ss(A+B*K_C_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
-bode(sys_CT)
+%bode(sys_CT)
 [mag_CT,phase_CT,w_CT] = bode(sys_CT);
-h_CT=hinfnorm(sys_CT)
+h_CT=norm(sys_CT,Inf)
+sigma(sys_CT),grid
 
 [K_C_DT,rho_C_DT,feas_C_DT]=LMI_DT_DeDicont_Hinf(F,Gdec,Hdec,N,ContStrucC);
-sys_ss_DT=ss(F+G*K_C_DT, G, H, N_dt);
+sys_ss_DT=ss(F+G*K_C_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
-bode(sys_DT)
+%bode(sys_DT)
 [mag_DT,phase_DT,w_DT] = bode(sys_DT);
+plot_eig_DT(F+G*K_C_DT)
+%sigma(sys_DT),grid
 h_DT=hinfnorm(sys_DT)
 
 % 
