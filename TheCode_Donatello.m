@@ -101,6 +101,9 @@ h=1;
 N=5;
 n_states=4;
 
+Bw=rand([20,5]); %NOISEs TO BE USED IN H2 and Hinf
+Gw=rand([20,5]);
+
 [F,G,H,L,h]=ssdata(c2d(ss(A,B,C,[]),h));
 
 
@@ -147,10 +150,10 @@ rho_dt_cent
 feas_dt_cent
 
 %CT H2 gains
-[K_cent2,rho_cent2,feas_cent2]=LMI_CT_H2(A,Bdec,Cdec,N,ContStruc);
+[K_cent2,rho_cent2,feas_cent2]=LMI_CT_H2(A,Bdec,Cdec,N,ContStruc,Bw);
 rho_cent2
 feas_cent2
-[K_dt_cent2,rho_dt_cent2,feas_dt_cent2]=LMI_DT_H2(F,Gdec,Hdec,N,ContStruc);
+[K_dt_cent2,rho_dt_cent2,feas_dt_cent2]=LMI_DT_H2(F,Gdec,Hdec,N,ContStruc,Gw);
 rho_dt_cent2
 feas_dt_cent2
 
@@ -209,5 +212,13 @@ feas_dt_BiStar
 
 
 %%
-Bw=rand([20,5]);
-H2_solution(A,Bdec,Cdec,F,Gdec,Hdec,N,rounding_n,Bw)
+
+[ContStruc,K,best_rho,feas]=Optimize_ContStruc_CT_H2(A,Bdec,Cdec,N,Bw);
+ContStruc
+feas
+best_rho
+
+[ContStrucd,Kd,best_rhod,feasd]=Optimize_ContStruc_DT_H2(F,Gdec,Hdec,N,Gw);
+ContStrucd
+feasd
+best_rhod

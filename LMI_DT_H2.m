@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
+function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc,Gw)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -53,7 +53,9 @@ else
 end
 % N=[]
 
-Gw=rand([20,5]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
+
+
+%Gw=rand([20,5]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
 
 S=sdpvar(ntot+mtot); %25x25
 
