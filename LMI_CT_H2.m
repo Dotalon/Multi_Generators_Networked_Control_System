@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc)
+function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc,Bw)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -17,6 +17,20 @@ function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc)
 % - rho: spectral abscissa of matrix (A+B*K) - note that [C{1}',...,
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
+
+
+% MIO PENSIERO SU PROBLEMA CON L'OTTIMIZZAZIONE DI CONTSRUC: il fatto che a
+% ogni chiamata di questa funzione la matrice di rumore viene randomizzata
+% va a sfalsare la funzione Optimize_ContrStruc (di maggior livello di
+% astrazione rispetto a questa). L'ideale sarebbe dare Bw in input a questa
+% funzione e randomizzarlo solo una volta nel codice principale (TheCode).
+% Oserei dire che l'implementazione totale risulterebbe piu' corretta in
+% quanto si mantengono gli stessi noise per tutte gli altri eventuali tipi
+% di controllo
+%
+% In questa implementazione ho provveduto a correggere questo errore.
+% EDIT: NON STA FUNZIONANDO! ANCORA STESSO PROBLEMA
+
 
 Btot=[];
 for i=1:N
@@ -51,9 +65,8 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
 
-Bw=rand([20,5]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
+% Bw is a 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)  
 
 S=sdpvar(ntot+mtot);
 

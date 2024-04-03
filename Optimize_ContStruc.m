@@ -1,4 +1,4 @@
-function [ContStruc,K,best_rho,feas]=Optimize_ConStruc(A,Bdec,Cdec,N)
+function [ContStruc,K,best_rho,feas]=Optimize_ContStruc(A,Bdec,Cdec,N,func,Bw)
 %Matrix Randomizer 5x5 for Continuous Time keeps on randomizing the matrix and computing gains until rho stops
 %decrementing for 100 iterations. Note this is based on the function
 %LMI_CT_DeDicont which has to be changed based on the requested control
@@ -36,8 +36,18 @@ while (counter<=100) %change this threshold to reduce/increment iterations after
         ContStruc
         ContStruc_new
         break
-    else 
-        [new_K,new_rho,new_feas]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_new);
+    else
+        switch func
+            case 'LMI_CT_DeDicont' 
+                [new_K,new_rho,new_feas]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_new);
+            case 'LMI_DT_DeDicont'
+                [new_K,new_rho,new_feas]=LMI_DT_DeDicont(A,Bdec,Cdec,N,ContStruc_new);
+            case 'LMI_CT_H2'
+                [new_K,new_rho,new_feas]=LMI_CT_H2(A,Bdec,Cdec,N,ContStruc_new,Bw);
+            case 'LMI_DT_H2'
+                [new_K,new_rho,new_feas]=LMI_DT_H2(A,Bdec,Cdec,N,ContStruc_new,Bw);
+        end
+
         if round(new_rho,5)>=best_rho 
             counter=counter+1
         end

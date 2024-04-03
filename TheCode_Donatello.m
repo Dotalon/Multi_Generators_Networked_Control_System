@@ -207,31 +207,7 @@ rho_dt_BiStar
 feas_dt_BiStar
 
 
-%% ACazzoDeCane topology
-ContStruc_Acazz= [ 1 0 1 0 0
-                   1 1 0 1 0
-                   0 0 1 0 1
-                   1 0 0 1 0
-                   0 0 1 0 1];
-
-CFM_Acazz=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_Acazz, rounding_n)
-%no fixed modes in Continuous
-DFM_Acazz=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_Acazz, rounding_n)
-%no fixed modes in Discrete
-
-%Continuous Time gains
-[K_Acazz,rho_Acazz,feas_Acazz]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStruc_Acazz);
-K_Acazz
-rho_Acazz
-feas_Acazz
-
-%Discrete Time gains
-[K_dt_Acazz,rho_dt_Acazz,feas_dt_Acazz]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStruc_Acazz);
-K_dt_Acazz
-rho_dt_Acazz
-feas_dt_Acazz
 
 %%
-[ContStruc,K,best_rho,feas]=Optimize_ConStruc(A,Bdec,Cdec,N);
-ContStruc
-best_rho
+Bw=rand([20,5]);
+H2_solution(A,Bdec,Cdec,F,Gdec,Hdec,N,rounding_n,Bw)
