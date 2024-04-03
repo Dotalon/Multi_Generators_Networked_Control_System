@@ -165,6 +165,7 @@ ContStrucDi=[ 1 1 0 0 0
 
 %RIMASUGLI DI QUELLO CHE AVEVO FATTO PRIMA, CREDO DA ELIMINARE
 
+
 % %% Apply control gains for stability only
 % [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 % [K_c_DT,rho_c_DT,feas_c_DT]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStrucC);
@@ -269,29 +270,33 @@ end
 %% Plot of the movements for every control law used (simple stability, alpha-stab,ecc) 
 
 figure
+title('Niconico')
 for i=1:N
     subplot(N,3,1+(3*(i-1)))
     hold on
     grid on
     title(['\speed_{',num2str(i),'}'])
     plot(T,[x_c((i)*4-2,:)],'k')
-    legend('Simple stab CENTR CT')
+    plot(T,[x_simple_stab_DE((i)*4-2,:)],'r')
+    plot(T,[x_simple_stab_Di((i)*4-2,:)],'b')
+    legend('centralized','decentralized', 'distributed');
 
-    subplot(N,3,2+(3*(i-1)))
-    hold on
-    grid on
-    title(['\speed_DE{',num2str(i),'}'])
-    plot(T,[x_simple_stab_DE((i)*4-2,:)],'k')
-    legend('simple stab DE CT')
-
-    subplot(N,3,3+(3*(i-1)))
-    hold on
-    grid on
-    title(['\speed_Di{',num2str(i),'}'])
-    plot(T,[x_simple_stab_Di((i)*4-2,:)],'k')
-    legend('simple stab Di CT')
-   
+%     subplot(N,3,2+(3*(i-1)))
+%     hold on
+%     grid on
+%     title(['\speed_DE{',num2str(i),'}'])
+%     plot(T,[x_simple_stab_DE((i)*4-2,:)],'k')
+%     legend('simple stab DE CT')
+% 
+%     subplot(N,3,3+(3*(i-1)))
+%     hold on
+%     grid on
+%     title(['\speed_Di{',num2str(i),'}'])
+%     plot(T,[x_simple_stab_Di((i)*4-2,:)],'k')
+%     legend('simple stab Di CT')
+%    
 end
+%% 
 
 figure 
 for i=1:N
@@ -305,7 +310,9 @@ for i=1:N
     subplot(N,3,2+(3*(i-1)))
     hold on
     grid on
-    title(['\speed_DE{',num2str(i),'}'])
+    title(['\speed_DE{',num2str(i),'}'])4
+
+    
     plot(T,[x_alpha_stab_DE((i)*4-2,:)],'k')
     legend('Alpha stab DE CT')
     
