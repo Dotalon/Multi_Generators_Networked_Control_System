@@ -149,7 +149,7 @@ ContStrucDi=[ 1 1 0 0 0
 [CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n)
 [DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n)
 
-% Centralized Hinf
+%Centralized Hinf
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
 sys_ss_CT=ss(A+B*K_C_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
@@ -160,7 +160,7 @@ sys_ss_DT=ss(F+G*K_C_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
 h_C_DT=hinfnorm(sys_DT)
 
-% Decentralized Hinf
+%Decentralized Hinf
 [K_De_CT,rho_De_CT,feas_De_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucDe);
 sys_ss_CT=ss(A+B*K_De_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
@@ -171,7 +171,7 @@ sys_ss_DT=ss(F+G*K_De_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
 h_De_DT=hinfnorm(sys_DT)
 
-% Distributed Hinf
+%Distributed Hinf
 [K_Di_CT,rho_Di_CT,feas_Di_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucDi);
 sys_ss_CT=ss(A+B*K_Di_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
@@ -213,24 +213,124 @@ for i=1:N
     subplot(N,3,1+(3*(i-1)))
     hold on
     grid on
-    title(['SpeedC_{',num2str(i),'}'])
-    plot(T,[x_Hinf_C((i)*4-2,:)],'k')
+    title(['Speed_{',num2str(i),'}'])
+    plot(T,[x_c((i)*4-2,:)],'k')
     legend('H_{inf} CENTR CT')
 
     subplot(N,3,2+(3*(i-1)))
     hold on
     grid on
     title(['SpeedDe_{',num2str(i),'}'])
-    plot(T,[x_Hinf_De((i)*4-2,:)],'k')
+    plot(T,[x_simple_stab_DE((i)*4-2,:)],'k')
     legend('H_{inf} DECENTR CT')
 
     subplot(N,3,3+(3*(i-1)))
     hold on
     grid on
     title(['SpeedDi_{',num2str(i),'}'])
-    plot(T,[x_Hinf_Di((i)*4-2,:)],'k')
+    plot(T,[x_simple_stab_Di((i)*4-2,:)],'k')
     legend('H_{inf} DISTR CT')
    
+end
+
+figure 
+for i=1:N
+    subplot(N,3,1+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_{',num2str(i),'}'])
+    plot(T,[x_alpha_stab((i)*4-2,:)],'k')
+    legend('Alpha stab CENTR CT')
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_DE_{',num2str(i),'}'])
+    plot(T,[x_alpha_stab_DE((i)*4-2,:)],'k')
+    legend('Alpha stab DE CT')
+    
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_Di_{',num2str(i),'}'])
+    plot(T,[x_alpha_stab_Di((i)*4-2,:)],'k')
+    legend('alpha stab Di CT')
+
+end
+
+figure
+for i=1:N
+    subplot(N,3,1+3*(i-1))
+    hold on
+    grid on
+    title(['Speed_{',num2str(i),'}'])
+    plot(T,[x_disc((i)*4-2,:)],'k')
+    legend('Eig in disc CENTR CT')
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_DE_{',num2str(i),'}'])
+    plot(T,[x_disc_DE((i)*4-2,:)],'k')
+    legend('Eig in disc DE CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_Di_{',num2str(i),'}'])
+    plot(T,[x_disc_Di((i)*4-2,:)],'k')
+    legend('eig in disc Di CT')
+end
+
+
+figure
+for i=1:N
+    subplot(N,3,1+3*(i-1))
+    hold on
+    grid on
+    title(['Speed_{',num2str(i),'}'])
+    plot(T,[x_region((i)*4-2,:)],'k')
+    legend('Eig in region CENTR CT')
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_DE_{',num2str(i),'}'])
+    plot(T,[x_region_DE((i)*4-2,:)],'k')
+    legend('eig in region DE CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_Di_{',num2str(i),'}'])
+    plot(T,[x_region_Di((i)*4-2,:)],'k')
+    legend('eig in region Di CT')
+end
+
+
+figure
+for i=1:N
+    subplot(N,3,1+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_{',num2str(i),'}'])
+    plot(T,[x_H2((i)*4-2,:)],'k')
+    legend('H2 centr')
+
+
+    subplot(N,3,2+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_DE_{',num2str(i),'}'])
+    plot(T,[x_H2_DE((i)*4-2,:)],'k')
+    legend('H2 DE CT')
+    
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['Speed_Di_{',num2str(i),'}'])
+    plot(T,[x_H2_Di((i)*4-2,:)],'k')
+    legend('H2 Di CT')
 end
 % 
 % %% Decentralized Control
