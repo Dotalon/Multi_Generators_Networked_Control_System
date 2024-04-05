@@ -88,7 +88,7 @@ A=[ A11 A12 A13 A14 A15;
 B=blkdiag(B1,B2,B3,B4,B5);
 C=blkdiag(C1,C2,C3,C4,C5);
 sys=ss(A,B,C,[]);
-h_std=norm(sys,Inf)
+h_std=hinfnorm(sys)
 %% Decoupled and discretized model
 Bdec=[];
 Cdec=[];
@@ -150,37 +150,38 @@ ContStrucDi=[ 1 1 0 0 0
 [DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n)
 
 % Centralized Hinf
-[K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
+[K_C_CT,rho_C_CT,feas_C_CT, gamma_C_CT]=LMI_CT_DeDicont_Hinf_2(A,Bdec,Cdec,N,ContStrucC);
 sys_ss_CT=ss(A+B*K_C_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
-h_C_CT=norm(sys_CT,Inf)
+h_C_CT=hinfnorm(sys_CT)
+sigma(sys_CT)
 
-[K_C_DT,rho_C_DT,feas_C_DT]=LMI_DT_DeDicont_Hinf(F,Gdec,Hdec,N,ContStrucC);
+[K_C_DT,rho_C_DT,feas_C_DT, gamma_C_DT]=LMI_DT_DeDicont_Hinf_2(F,Gdec,Hdec,N,ContStrucC);
 sys_ss_DT=ss(F+G*K_C_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
 h_C_DT=hinfnorm(sys_DT)
 
 % Decentralized Hinf
-[K_De_CT,rho_De_CT,feas_De_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucDe);
+[K_De_CT,rho_De_CT,feas_De_CT, gamma_De_CT]=LMI_CT_DeDicont_Hinf_2(A,Bdec,Cdec,N,ContStrucDe);
 sys_ss_CT=ss(A+B*K_De_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
 h_De_CT=norm(sys_CT,Inf)
 
-[K_De_DT,rho_De_DT,feas_De_DT]=LMI_DT_DeDicont_Hinf(F,Gdec,Hdec,N,ContStrucDe);
+[K_De_DT,rho_De_DT,feas_De_DT, gamma_De_DT]=LMI_DT_DeDicont_Hinf_2(F,Gdec,Hdec,N,ContStrucDe);
 sys_ss_DT=ss(F+G*K_De_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
 h_De_DT=hinfnorm(sys_DT)
 
 % Distributed Hinf
-[K_Di_CT,rho_Di_CT,feas_Di_CT]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucDi);
+[K_Di_CT,rho_Di_CT,feas_Di_CT, gamma_Di_CT]=LMI_CT_DeDicont_Hinf_2(A,Bdec,Cdec,N,ContStrucDi);
 sys_ss_CT=ss(A+B*K_Di_CT, B, C, []);
 sys_CT=tf(sys_ss_CT);
 h_Di_CT=norm(sys_CT,Inf)
 
-[K_Di_DT,rho_Di_DT,feas_Di_DT]=LMI_DT_DeDicont_Hinf(F,Gdec,Hdec,N,ContStrucDi);
+[K_Di_DT,rho_Di_DT,feas_Di_DT, gamma_Di_DT]=LMI_DT_DeDicont_Hinf_2(F,Gdec,Hdec,N,ContStrucDi);
 sys_ss_DT=ss(F+G*K_Di_DT, G, H, []);
 sys_DT=tf(sys_ss_DT);
-h_Di_DT=hinfnorm(sys_DT)
+h_Di_DT=getPeakGain(sys_DT)
 
 %% simulation
 %   Display on every figure 3 cols: centralized, decentralized and distributed

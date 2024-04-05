@@ -1,4 +1,4 @@
-function [K,rho,feas, gamma_x]=LMI_CT_DeDicont_Hinf(F,G,H,N,ContStruc)
+function [K,rho,feas, gamma_x]=LMI_DT_DeDicont_Hinf_2(F,G,H,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -27,9 +27,6 @@ end
 ntot=size(F,1);
 mtot=sum(m);
 
-gamma_max = 1e3;
-gamma_min = 0.1;
-
 Gw = rand([20,20]);
 
 Hh = [eye(ntot); zeros(mtot, ntot)];
@@ -42,10 +39,12 @@ if ContStruc==ones(N,N)
     % Centralized design
     P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
+    gamma = sdpvar(1);
 else
     % Decentralized/distributed design
     P=[];
     L=sdpvar(mtot,ntot);
+    gamma = sdpvar(1);
     minc=0;
     for i=1:N
         P=blkdiag(P,sdpvar(n(i)));
@@ -60,37 +59,18 @@ else
     end  
 end
 
-while(true)                                          % while is used to find the minimum gamma (https://www.youtube.com/watch?v=ah4FIabnTzg&t=1192s&ab_channel=ArtCell)
-    if [(gamma_max-gamma_min)/gamma_min]<1e-3
-        gamma_test = (gamma_max+gamma_min)/2;
-        gamma_test
-        break;
-    end
-   gamma_test = (gamma_max + gamma_min)/2;
-
    LMIconstr = [[P  F*P+Gtot*L  Gw  zeros(20,25);
            P*F'+L'*Gtot'  P  zeros(20)  P*Hh'+L'*Nu';
-           Gw'  zeros(20)  gamma_test*eye(ntot)  Nw';
-           zeros(25, 20)  Hh*P+Nu*L  Nw   gamma_test*eye(ntot+mtot)]>=1e-2*eye(ntot*4+mtot)]+[P>=1e-2*eye(ntot)];
+           Gw'  zeros(20)  gamma*eye(ntot)  Nw';
+           zeros(25, 20)  Hh*P+Nu*L  Nw   gamma*eye(ntot+mtot)]>=1e-2*eye(ntot*4+mtot)]+[P>=1e-2*eye(ntot)]+[gamma>=1e-3];
 options=sdpsettings('solver','sdpt3');
-sol = optimize(LMIconstr,[],options);
+sol = optimize(LMIconstr,gamma,options);
  
-if (sol.problem==1)
-       disp('Infeasible');
-       gamma_min = gamma_test;
-    elseif (sol.problem==0)
-       disp('Feasible')
-       gamma_max = gamma_test;
-    else
-        disp('Numerical Error')
-        break;
-     end
-end
 
 feas=sol.problem;
 L=double(L);
 P=double(P);
 
-gamma_x=gamma_test;
+gamma_x= double(gamma);
 K=L/P;
 rho=max(real(eig(F+Gtot*K)));
