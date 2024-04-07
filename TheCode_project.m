@@ -124,6 +124,7 @@ ContStrucC=ones(N,N);
 %[ 1 1 1 1 1
 %  1 1 1 1 1
 %  1 1 1 1 1
+%  1 1 1 1 1
 %  1 1 1 1 1];  %centralized structure
 
 [CFMC]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucC, rounding_n) % no centralized fixed modes CT
