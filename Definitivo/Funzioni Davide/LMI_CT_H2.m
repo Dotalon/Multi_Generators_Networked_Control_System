@@ -40,7 +40,7 @@ if ContStruc==ones(N,N)
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
     Cq = sqrt(Q);
-    Cq = eye(20)
+    %Cq = eye(20)
     r = 0.5;
 
     Ch=[Cq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
@@ -87,7 +87,7 @@ end
 % N=[]
 
 
-LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S            Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S   Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
 options=sdpsettings('solver','sdpt3');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   

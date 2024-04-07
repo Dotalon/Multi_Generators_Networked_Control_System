@@ -1271,7 +1271,7 @@ for v=1:n_states
     end
 end
 
-%% Eigenvalues comparion on centralized Stabilizing vs H2
+%% Eigenvalues comparion on different control laws
 eigenvaluesDT = eig(F+G*K_C_DT);
     figure()
     grid on
@@ -1283,7 +1283,7 @@ eigenvaluesDT = eig(F+G*K_C_DT);
     xlabel('Re')
     ylabel('Im')
 
-    eigenvaluesDT = eig(F+G*K_C2_DT);
+    eigenvaluesDT = eig(F+G*K_C5_DT);
     figure()
     grid on
     hold on
