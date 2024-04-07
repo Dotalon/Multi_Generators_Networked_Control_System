@@ -359,3 +359,53 @@ spectral_abscissa = round(max(real(eig(A))),10)
 eigenvaluesDT = eig(F+G*K_dt_cyc2)
 spectral_radius = round(max(abs(eig(F))),10)
 
+%%  SIMULATION
+%   Display on every figure 3 cols: centralized, decentralized and distributed
+%   schemes, for now in continuous time (CT)
+
+Tfinal=45;
+T=[0:0.01:Tfinal];
+x0=[];
+for i=1:N
+    x0=[x0;randn(n_states,1)];     %random col vector of initial states
+end
+
+k=0;
+for t=T
+    k=k+1;
+    % equations of centralized free movement
+    x_Hinf_C(:,k)=expm((A+B*K_cent)*t)*x0;
+    
+    % equations of decentralized free movement
+   % x_Hinf_De(:,k)=expm((A+B*K_De_CT)*t)*x0;
+    
+    % equations of distributed free movement
+    x_Hinf_Di(:,k)=expm((A+B*K_OPT)*t)*x0;
+end
+
+%% Plot of the movements for every control law used (simple stability, alpha-stab,ecc) 
+
+figure
+for i=1:N
+    subplot(N,3,1+(3*(i-1)))
+    hold on
+    grid on
+    title(['SpeedC_{',num2str(i),'}'])
+    plot(T,[x_Hinf_C((i)*4-2,:)],'k')
+    legend('H_{inf} CENTR CT')
+
+%     subplot(N,3,2+(3*(i-1)))
+%     hold on
+%     grid on
+%     title(['SpeedDe_{',num2str(i),'}'])
+%     plot(T,[x_Hinf_De((i)*4-2,:)],'k')
+%     legend('H_{inf} DECENTR CT')
+
+    subplot(N,3,3+(3*(i-1)))
+    hold on
+    grid on
+    title(['SpeedDi_{',num2str(i),'}'])
+    plot(T,[x_Hinf_Di((i)*4-2,:)],'k')
+    legend('H_{inf} DISTR CT')
+   
+end
