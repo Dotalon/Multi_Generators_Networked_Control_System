@@ -28,18 +28,20 @@ ntot=size(A,1);        %20
 mtot=sum(m);           %5
 
 yalmip clear
-
+q=50;
+r=25;
 if ContStruc==ones(N,N)
     % Centralized design
     Y=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
 
-    Bw=rand([20,1]);  % 20x5 random matrix of noises, multiplies the 5x20 vector w (noise)
-    
+    %Bw=rand([20,1]);  
+    Bw=eye(ntot);
+
     S=sdpvar(ntot+mtot); %25x25
 
-    Ch=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Ch=q*[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
+    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
     %Ch=[sdpvar(ntot);zeros(mtot,ntot)];
     %Dh=[zeros(ntot,mtot);sdpvar(mtot)];
@@ -52,12 +54,13 @@ else
     Y=[];
     L=sdpvar(mtot,ntot);
 
-    Bw=rand([20,1]); %hopefully same thing as before
-
+%     Bw=rand([20,1]); %hopefully same thing as before
+    Bw=eye(ntot);
+    
     S=sdpvar(ntot+mtot); %25x25
 
-    Ch=[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Ch=q*[eye(ntot);zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
+    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
 
     minc=0;
@@ -76,7 +79,10 @@ end
 % N=[]
 
 
-LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S            Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)];
+LMIconstr=LMIconstr+[Y>=1e-2*eye(ntot)];
+LMIconstr=LMIconstr+[[S                 Ch*Y+Dh*L;
+                        L'*Dh'+Y*Ch'            Y]>=1e-2*eye(ntot+mtot*5)];
 options=sdpsettings('solver','sedumi');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   

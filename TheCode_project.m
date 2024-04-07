@@ -100,8 +100,8 @@ n_states=4;
 
 
 for i=1:N
-    Bdec{i}=B(:,i);
-    Cdec{i}=C(n_states*(i-1)+1:n_states*i,:);
+    Bdec{i}=B(:,i);             %B divided in 5 cols, 1 input for each area
+    Cdec{i}=C(n_states*(i-1)+1:n_states*i,:); %C divided in 5 sets of 4x20 matrices
     Gdec{i}=G(:,i);
     Hdec{i}=H(n_states*(i-1)+1:n_states*i,:);
 end
@@ -114,25 +114,27 @@ eigenvaluesDT = eig(F)
 spectral_radius = round(max(abs(eig(F))),10)
 
 %the system is simply stable as we have only one eig on the border (zero for CT , 1 for DT),
-%in both cases
+%both CT and DT (as expected)
 
-%% centralized fixed modes
+
+
+%% centralized structure
 rounding_n=3;
 ContStrucC=ones(N,N);
 %[ 1 1 1 1 1
 %  1 1 1 1 1
 %  1 1 1 1 1
 %  1 1 1 1 1];  %centralized structure
+
 [CFMC]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucC, rounding_n) % no centralized fixed modes CT
 [DFMC]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucC, rounding_n) % no centralized fixed modes DT
 
 [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 [K_c2,rho_c2,feas_c2]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-[K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+% [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
 [K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
 [K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm
 
-%Can't make Hinf work
 
 %% decentralized fixed modes
 ContStrucDe=diag(ones(N,1));
@@ -163,76 +165,246 @@ ContStrucDi=[ 1 1 0 0 0
 [K_c4_Di,rho_c4_Di,feas_c4_Di]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi);
 [K_c5_Di,rho_c5_Di,feas_c5_Di]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi);
 
-%RIMASUGLI DI QUELLO CHE AVEVO FATTO PRIMA, CREDO DA ELIMINARE
 
 
-% %% Apply control gains for stability only
-% [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
-% [K_c_DT,rho_c_DT,feas_c_DT]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStrucC);
-% eig(F+G*K_c_DT)
-% 
-% %% alpha-stability
-% [K_c2,rho_c2,feas_c2]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-% 
-% [K_c2_DT,rho_c2_DT,feas_c2_DT]=LMI_DT_EIG_CIRCLE(F,Gdec,Hdec,N,ContStrucC);
-% 
-% 
-% %% Confine eigs in a circle 
-% [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
-% 
-% %[eigenvalues_wrong] = eig(A+B*K_c3);
-% %plot([eigenvalues_wrong])
-% 
-% %No discrete time cause it doesn't make sense
-% 
-% %% Confine eigs in region WORKS
-% [K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC);
-% 
-% %No discrete time cause it doesn't make sense
-% 
-% %% H2 norm minimization
-% [K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC);
-% 
-% % [K_c5_DT,rho_c5_DT,feas_c5_DT]=LMI_DT_H2(F,Gdec,Hdec,N,ContStrucC);
-% 
-% 
-% %% Hinf non funziona, serve guardare
-% [K_c6,rho_c6,feas_c6]=LMI_CT_DeDicont_Hinf(A,Bdec,Cdec,N,ContStrucC);
-% 
 
 
-%% don't actually know why this part is here but I'm scared of deleting it
-Gtot=[];
-Htot=[];
-Btot=[];
-Ctot=[];
-for i=1:N
-    Btot=[Btot,Bdec{i}];
-    Ctot=[Ctot
-        Cdec{i}];
-    Gtot=[Gtot,Gdec{i}];
-    Htot=[Htot
-        Hdec{i}];
+%% SIM
+%   Display on every figure 3 cols: centralized, decentralized and distributed
+%   schemes, for now in continuous time (CT)
+
+Tfinal=15;
+T=[0:0.01:Tfinal];
+% x0=[];
+% for i=1:N
+%     x0=[x0;randn(n_states,1)];     %random col vector of initial states
+% end
+x0 =0.1*[0.5377; 1.8339;-2.2588;0.8622;0.3188;-1.3077;-0.4336;0.3426;3.5784;2.7694;-1.3499;3.0349;0.7254;-0.0631;0.7147;-0.2050;-0.1241;1.4897;1.4090;1.4172];
+
+k=0;
+for t=T
+    k=k+1;
+    x_OL(:,k)=expm((A)*t)*x0;
+
+    x_c(:,k)=expm((A+B*K_c)*t)*x0;
+    u_c=K_c*x_c;
+    x_simple_stab_DE(:,k)=expm((A+B*K_c_DE)*t)*x0;
+    u_ss_DE=K_c_DE*x_simple_stab_DE;
+    x_simple_stab_Di(:,k)=expm((A+B*K_c_Di)*t)*x0;
+    u_ss_Di=K_c_Di*x_simple_stab_Di;
+
+    x_region(:,k)=expm((A+B*K_c4)*t)*x0;
+    u_region=K_c4*x_region;
+    x_region_DE(:,k)=expm((A+B*K_c4_DE)*t)*x0;
+    u_region_DE=K_c4*x_region_DE;
+    x_region_Di(:,k)=expm((A+B*K_c4_Di)*t)*x0;
+    u_region_Di=K_c4*x_region_Di;
+
+    x_H2(:,k)=expm((A+B*K_c5)*t)*x0;
+    u_H2=K_c5*x_H2;
+    x_H2_DE(:,k)=expm((A+B*K_c5_DE)*t)*x0;
+    u_H2_DE=K_c5_DE*x_H2_DE;
+    x_H2_Di(:,k)=expm((A+B*K_c5_Di)*t)*x0;
+    u_H2_Di=K_c5_Di*x_H2_Di;
+
 end
+figure
+for n=1:N
+  plot(T,[x_OL((n)*4-2,:)],'k')
+  hold on
+  grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Open loop system')
 
+figure 
+subplot(3,1,1)
+for n=1:N
+  plot(T,[x_c((n)*4-2,:)],'k')
+  hold on
+  grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Centralized simple stability')
+subplot(3,1,2)
+for n=1:N
+    plot(T,[x_simple_stab_DE((n)*4-2,:)],'r')
+    hold on
+    grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Decentralized simple stability')
+subplot(3,1,3)
+for n=1:N
+    plot(T,[x_simple_stab_Di((n)*4-2,:)],'g')
+    hold on
+    grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Distributed simple stab')
+
+figure
+subplot(3,1,1)
+for n=1:N
+  plot(T,[u_c((n),:)],'k')
+  hold on
+  grid on
+end
+title('control action centralized ss')
+subplot(3,1,2)
+for n=1:N
+  plot(T,[u_ss_DE((n),:)],'r')
+  hold on
+  grid on
+end
+title('control action decentralized ss')
+subplot(3,1,3)
+for n=1:N
+  plot(T,[u_ss_Di((n),:)],'g')
+  hold on
+  grid on
+end
+title('control action distributed ss')
+
+%% 
+figure 
+subplot(3,1,1)
+for n=1:N
+  plot(T,[x_region((n),:)],'k')
+  hold on
+  grid on
+end
+title('Centralized eig in region')
+subplot(3,1,2)
+for n=1:N
+    plot(T,[x_region_DE((n),:)],'r')
+    hold on
+    grid on
+end
+title('Decentralized eig in region')
+subplot(3,1,3)
+for n=1:N
+    plot(T,[x_region_Di((n),:)],'g')
+    hold on
+    grid on
+end
+title('Distributed eig in region')
+
+
+figure
+subplot(3,1,1)
+for n=1:N
+  plot(T,[u_region((n),:)],'k')
+  hold on
+  grid on
+end
+title('control action centralized region')
+subplot(3,1,2)
+for n=1:N
+  plot(T,[u_region_DE((n),:)],'r')
+  hold on
+  grid on
+end
+title('control action decentralized region')
+subplot(3,1,3)
+for n=1:N
+  plot(T,[u_region_Di((n),:)],'g')
+  hold on
+  grid on
+end
+title('control action distributed region')
+%% 
+
+
+figure 
+subplot(3,1,1)
+for n=1:N
+  plot(T,[x_H2((n),:)],'k')
+  hold on
+  grid on
+end
+title('Centralized H2')
+subplot(3,1,2)
+for n=1:N
+    plot(T,[x_H2_DE((n),:)],'r')
+    hold on
+    grid on
+end
+title('Decentralized H2')
+subplot(3,1,3)
+for n=1:N
+    plot(T,[x_H2_Di((n),:)],'g')
+    hold on
+    grid on
+end
+title('Distributed H2')
+
+
+
+
+
+
+%% 
+
+figure 
+subplot(3,1,1)
+for n=1:N
+  plot(T,[x_region((n)*4-2,:)],'k')
+  hold on
+  grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Centralized states with eig in region')
+subplot(3,1,2)
+for n=1:N
+    plot(T,[x_region_DE((n)*4-2,:)],'r')
+    hold on
+    grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Decentralized states with eig in region')
+subplot(3,1,2)
+subplot(3,1,3)
+for n=1:N
+    plot(T,[x_region_Di((n)*4-2,:)],'g')
+    hold on
+    grid on
+end
+axis([0 T(end) min(x0)-0.2 max(x0)+0.2])
+title('Distributed states with eig in region')
+
+
+
+
+
+% legend('centralized','decentralized', 'distributed')
+
+%     grid on
+%     title(['\speed_{',num2str(i),'}'])
+%     plot(T,[x_c((i)*4-2,:)],'k')
+%     plot(T,[x_simple_stab_DE((i)*4-2,:)],'r')
+%     plot(T,[x_simple_stab_Di((i)*4-2,:)],'b')
+%     legend('centralized','decentralized', 'distributed');
+% end
 
 
 %% simulation
 %   Display on every figure 3 cols: centralized, decentralized and distributed
 %   schemes, for now in continuous time (CT)
 
-Tfinal=45;
+Tfinal=30;
 T=[0:0.01:Tfinal];
-x0=[];
-for i=1:N
-    x0=[x0;randn(n_states,1)];     %random col vector of initial states
-end
-
+% x0=[];
+% for i=1:N
+%     x0=[x0;randn(n_states,1)];     %random col vector of initial states
+% end
+x0 =[0.5377; 1.8339;-2.2588;0.8622;0.3188;-1.3077;-0.4336;0.3426;3.5784;2.7694;-1.3499;3.0349;0.7254;-0.0631;0.7147;-0.2050;-0.1241;1.4897;1.4090;1.4172];
 k=0;
 for t=T
     k=k+1;
     
     % equations of centralized free movement
+    x_OL(:,k)=expm((A)*t)*x0;
     x_c(:,k)=expm((A+B*K_c)*t)*x0;
     x_alpha_stab(:,k)=expm((A+B*K_c2)*t)*x0;
     x_disc(:,k)=expm((A+B*K_c3)*t)*x0;
@@ -280,7 +452,7 @@ for i=1:N
     plot(T,[x_simple_stab_DE((i)*4-2,:)],'r')
     plot(T,[x_simple_stab_Di((i)*4-2,:)],'b')
     legend('centralized','decentralized', 'distributed');
-
+end
 %     subplot(N,3,2+(3*(i-1)))
 %     hold on
 %     grid on
@@ -295,7 +467,7 @@ for i=1:N
 %     plot(T,[x_simple_stab_Di((i)*4-2,:)],'k')
 %     legend('simple stab Di CT')
 %    
-end
+
 %% 
 
 figure 
@@ -310,7 +482,7 @@ for i=1:N
     subplot(N,3,2+(3*(i-1)))
     hold on
     grid on
-    title(['\speed_DE{',num2str(i),'}'])4
+    title(['\speed_DE{',num2str(i),'}'])
 
     
     plot(T,[x_alpha_stab_DE((i)*4-2,:)],'k')
@@ -400,7 +572,17 @@ for i=1:N
     legend('H2 Di CT')
 end
 
-
+%% 
+figure
+for i=1:N
+    subplot(N,3,1+3*(i-1))
+    hold on
+    grid on
+    plot(T,[x_OL((i)*4-2,:)],'k')
+    xlabel('t [s]')
+    ylabel('Dw [rad/s]')
+    title(['\speed_OL{',num2str(i),'}'])
+end
 
 
 
