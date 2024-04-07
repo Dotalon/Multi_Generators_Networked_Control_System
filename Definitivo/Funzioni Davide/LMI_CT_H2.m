@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_CT_H2(A,B,Ch,N,ContStruc)
+function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -21,7 +21,7 @@ function [K2,rho2,feas2]=LMI_CT_H2(A,B,Ch,N,ContStruc)
 Btot=[];
 for i=1:N
     m(i)=size(B{i},2);
-    n(i)=size(Ch{i},1);
+    n(i)=size(C{i},1);
     Btot=[Btot,B{i}];
 end
 ntot=size(A,1);        %20
@@ -88,7 +88,7 @@ end
 
 
 LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S            Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
-options=sdpsettings('solver','sedumi');
+options=sdpsettings('solver','sdpt3');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   
 feas2=J.problem;
