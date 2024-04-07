@@ -181,10 +181,8 @@ end
      end   
 %% Open-loop Free Motion simulation DT
 
-k=0;
-for t=T
-    k=k+1;
-     x_OpenLoop_DT(:,k)=expm(F*t)*x0;
+for k=1:Tfinal/h
+     x_OpenLoop_DT(:,k)=(F^k)*x0;
 end
      for v=1:n_states
          switch v
@@ -195,7 +193,7 @@ end
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}'])
-                    plot(T,[x_OpenLoop_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_OpenLoop_DT((i)*4-(4-v),:)],'k')
                     legend('Open-loop free motion')
                 end
             case 2
@@ -205,7 +203,7 @@ end
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}'])
-                    plot(T,[x_OpenLoop_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_OpenLoop_DT((i)*4-(4-v),:)],'k')
                     legend('Open-loop free motion')
                 end
             case 3
@@ -215,7 +213,7 @@ end
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}'])
-                    plot(T,[x_OpenLoop_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_OpenLoop_DT((i)*4-(4-v),:)],'k')
                     legend('Open-loop free motion')
                 end
             case 4
@@ -225,7 +223,7 @@ end
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}'])
-                    plot(T,[x_OpenLoop_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_OpenLoop_DT((i)*4-(4-v),:)],'k')
                     legend('Open-loop free motion')
                 end
         end
@@ -842,26 +840,24 @@ for v=1:n_states
 end
 
 %% Simulation Discrete Time
-k=0;
-for t=T
-    k=k+1;
+for k=1:Tfinal/h
     % equations of centralized free movement
-    x_C_STABILITY_DT(:,k)=expm((F+G*K_C_DT)*t)*x0;
-    x_C_TRESH_DT(:,k)=expm((F+G*K_C2_DT)*t)*x0;
-    x_C_DISK_DT(:,k)=expm((F+G*K_C3_DT)*t)*x0;
-    x_C_H2_DT(:,k)=expm((F+G*K_C5_DT)*t)*x0;
+    x_C_STABILITY_DT(:,k)=((F+G*K_C_DT)^k)*x0;
+    x_C_TRESH_DT(:,k)=((F+G*K_C2_DT)^k)*x0;
+    x_C_DISK_DT(:,k)=((F+G*K_C3_DT)^k)*x0;
+    x_C_H2_DT(:,k)=((F+G*K_C5_DT)^k)*x0;
     
     % equations of decentralized free movement
-    x_De_STABILITY_DT(:,k)=expm((F+G*K_De_DT)*t)*x0;
-    x_De_TRESH_DT(:,k)=expm((F+G*K_De2_DT)*t)*x0;
-    x_De_DISK_DT(:,k)=expm((F+G*K_De3_DT)*t)*x0;
-    x_De_H2_DT(:,k)=expm((F+G*K_De5_DT)*t)*x0;
+    x_De_STABILITY_DT(:,k)=((F+G*K_De_DT)^k)*x0;
+    x_De_TRESH_DT(:,k)=((F+G*K_De2_DT)^k)*x0;
+    x_De_DISK_DT(:,k)=((F+G*K_De3_DT)^k)*x0;
+    x_De_H2_DT(:,k)=((F+G*K_De5_DT)^k)*x0;
     
     % equations of distributed free movement
-    x_Di_STABILITY_DT(:,k)=expm((F+G*K_Di_DT)*t)*x0;
-    x_Di_TRESH_DT(:,k)=expm((F+G*K_Di2_DT)*t)*x0;
-    x_Di_DISK_DT(:,k)=expm((F+G*K_Di3_DT)*t)*x0;
-    x_Di_H2_DT(:,k)=expm((F+G*K_Di5_DT)*t)*x0;
+    x_Di_STABILITY_DT(:,k)=((F+G*K_Di_DT)^k)*x0;
+    x_Di_TRESH_DT(:,k)=((F+G*K_Di2_DT)^k)*x0;
+    x_Di_DISK_DT(:,k)=((F+G*K_Di3_DT)^k)*x0;
+    x_Di_H2_DT(:,k)=((F+G*K_Di5_DT)^k)*x0;
 end
 
 % PLOTS
@@ -875,21 +871,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Distributed DT')
              end
          case 2
@@ -899,21 +895,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Distributed DT')
              end
          case 3
@@ -923,21 +919,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Distributed DT')
              end
          case 4
@@ -947,21 +943,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Distributed DT')
              end
     end
@@ -977,21 +973,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Distributed DT')
              end
          case 2
@@ -1001,21 +997,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Distributed DT')
              end
          case 3
@@ -1025,21 +1021,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Distributed DT')
              end
          case 4
@@ -1049,21 +1045,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Distributed DT')
              end
     end
@@ -1079,21 +1075,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Distributed DT')
              end
          case 2
@@ -1103,21 +1099,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Distributed DT')
              end
          case 3
@@ -1127,21 +1123,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Distributed DT')
              end
          case 4
@@ -1151,21 +1147,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_DISK_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Distributed DT')
              end
     end
@@ -1181,21 +1177,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Distributed DT')
              end
          case 2
@@ -1205,21 +1201,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Distributed DT')
              end
          case 3
@@ -1229,21 +1225,21 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Distributed DT')
              end
          case 4
@@ -1253,22 +1249,57 @@ for v=1:n_states
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,C}'])
-                    plot(T,[x_C_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,De}'])
-                    plot(T,[x_De_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,Di}'])
-                    plot(T,[x_Di_H2_DT((i)*4-(4-v),:)],'k')
+                    plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Distributed DT')
              end
     end
 end
+
+eigenvaluesDT = eig(F+G*K_C_DT);
+    figure()
+    grid on
+    hold on
+    plot(real(eigenvaluesDT), imag(eigenvaluesDT), '*')
+    disk = circle(0,0,1);
+    hold off
+    title('Eigenvalues')
+    xlabel('Re')
+    ylabel('Im')
+
+    eigenvaluesDT = eig(F+G*K_C2_DT);
+    figure()
+    grid on
+    hold on
+    plot(real(eigenvaluesDT), imag(eigenvaluesDT), '*')
+    disk = circle(0,0,1);
+    hold off
+    title('Eigenvalues')
+    xlabel('Re')
+    ylabel('Im')
+%% Grafici sovrapposti sample
+         % case 1
+         %     figure
+         %     for i=1:N
+         %            subplot(N,1,i)
+         %            hold on
+         %            grid on
+         %            title(['\Delta\theta_{',num2str(i),'}'])
+         %            plot(T,[x_C_STABILITY_CT((i)*4-(4-v),:)],'k')
+         %            plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
+         %            plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
+         %            legend('Stability Centralized CT','Stability Decentralized CT','Stability Distributed CT')
+         %     end
