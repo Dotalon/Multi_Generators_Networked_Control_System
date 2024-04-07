@@ -328,7 +328,7 @@ for t=T
     x_Di_H2_CT(:,k)=expm((A+B*K_Di5_CT)*t)*x0;
 end
 
-%% PLOTS Continuous time
+%% ----- PLOTS Continuous time -----
 
 %% Stability
 for v=1:n_states
