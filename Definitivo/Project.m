@@ -261,11 +261,11 @@ ContStrucDi=[ 1 1 0 0 0
 [CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n) %as expected since no decentralized
 [DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n) %as expected
 
-%% Conituous time Control Gains
+%% #### Conituous time Control Gains ####
 % Centralized
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 [K_C2_CT,rho_C2_CT,feas_C2_CT]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-[K_C3_CT,rho_C3_CT,feas_C3_CT]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+[K_C3_CT,rho_C3_CT,feas_C3_CT]=LMI_CT_EIG_CIRCLE(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
 [K_C4_CT,rho_C4_CT,feas_C4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
 [K_C5_CT,rho_C5_CT,feas_C5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
@@ -283,7 +283,7 @@ ContStrucDi=[ 1 1 0 0 0
 [K_Di4_CT,rho_Di4_CT,feas_Di4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi); %eig in region
 [K_Di5_CT,rho_Di5_CT,feas_Di5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
-%% Discrete time Control Gains
+%%  #### Discrete time Control Gains ####
 % Centralized
 [K_C_DT,rho_C_DT,feas_C_DT]=LMI_DT_DeDicont(F,Gdec,Hdec,N,ContStrucC); %control gains for stability only
 [K_C2_DT,rho_C2_DT,feas_C2_DT]=LMI_DT_EIG_TRESH(F,Gdec,Hdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
@@ -302,7 +302,7 @@ ContStrucDi=[ 1 1 0 0 0
 [K_Di3_DT,rho_Di3_DT,feas_Di3_DT]=LMI_DT_EIG_CIRCLE(F,Gdec,Hdec,N,ContStrucDi); %why unfeasible prob if it does what I want?
 [K_Di5_DT,rho_Di5_DT,feas_Di5_DT]=LMI_DT_H2(F,Gdec,Hdec,N,ContStrucDi); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
-%% Simulation Continuous Time
+%% ----- Simulation Continuous Time -----
 k=0;
 for t=T
     k=k+1;
@@ -328,8 +328,9 @@ for t=T
     x_Di_H2_CT(:,k)=expm((A+B*K_Di5_CT)*t)*x0;
 end
 
-% PLOTS
-% Stability
+%% PLOTS Continuous time
+
+%% Stability
 for v=1:n_states
     switch v
          case 1
@@ -369,7 +370,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized CT')
                 
@@ -431,7 +432,7 @@ for v=1:n_states
     end
 end   
 
-%Tresh
+%% Tresh CT
 for v=1:n_states
     switch v
          case 1
@@ -471,7 +472,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_TRESH_CT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized CT')
                 
@@ -533,7 +534,7 @@ for v=1:n_states
     end
 end   
 
-% Disk
+%% Disk CT
 for v=1:n_states
     switch v
          case 1
@@ -573,7 +574,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                   title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_DISK_CT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized CT')
                 
@@ -635,7 +636,7 @@ for v=1:n_states
     end
 end
 
-% Region
+%% Region CT
 for v=1:n_states
     switch v
          case 1
@@ -675,7 +676,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_REGION_CT((i)*4-(4-v),:)],'k')
                     legend('Region Eig Decentralized CT')
                 
@@ -737,7 +738,7 @@ for v=1:n_states
     end
 end
 
-% H2
+%% H2 CT
 for v=1:n_states
     switch v
          case 1
@@ -777,7 +778,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_H2_CT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized CT')
                 
@@ -839,7 +840,7 @@ for v=1:n_states
     end
 end
 
-%% Simulation Discrete Time
+%% ----- Simulation Discrete Time -----
 for k=1:Tfinal/h
     % equations of centralized free movement
     x_C_STABILITY_DT(:,k)=((F+G*K_C_DT)^k)*x0;
@@ -860,8 +861,9 @@ for k=1:Tfinal/h
     x_Di_H2_DT(:,k)=((F+G*K_Di5_DT)^k)*x0;
 end
 
-% PLOTS
-% Stability
+%% ----- PLOTS Discrete Time -----
+
+%% Stability DT
 for v=1:n_states
     switch v
          case 1
@@ -901,7 +903,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
                     legend('Stability Decentralized DT')
                 
@@ -963,7 +965,7 @@ for v=1:n_states
     end
 end   
 
-%Tresh
+%% Tresh DT
 for v=1:n_states
     switch v
          case 1
@@ -1003,7 +1005,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_TRESH_DT((i)*4-(4-v),:)],'k')
                     legend('Tresh Eig Decentralized DT')
                 
@@ -1065,7 +1067,7 @@ for v=1:n_states
     end
 end   
 
-% Disk
+%% Disk DT
 for v=1:n_states
     switch v
          case 1
@@ -1105,7 +1107,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                   title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
                     legend('Disk Eig Decentralized DT')
                 
@@ -1167,7 +1169,7 @@ for v=1:n_states
     end
 end
 
-% H2
+%% H2 DT
 for v=1:n_states
     switch v
          case 1
@@ -1207,7 +1209,7 @@ for v=1:n_states
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
-                    title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
+                    title(['\Delta\omega_{',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_H2_DT((i)*4-(4-v),:)],'k')
                     legend('H2 Decentralized DT')
                 
@@ -1269,6 +1271,7 @@ for v=1:n_states
     end
 end
 
+%% Eigenvalues comparion on centralized Stabilizing vs H2
 eigenvaluesDT = eig(F+G*K_C_DT);
     figure()
     grid on
@@ -1302,4 +1305,4 @@ eigenvaluesDT = eig(F+G*K_C_DT);
          %            plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
          %            plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
          %            legend('Stability Centralized CT','Stability Decentralized CT','Stability Distributed CT')
-         %     end
+         %     end         %     end
