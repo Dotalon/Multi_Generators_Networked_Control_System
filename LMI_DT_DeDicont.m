@@ -59,5 +59,5 @@ feas=J.problem;
 L=double(L);
 P=double(P);
 
-K=L*P; i think its /
+K=L/P;
 rho=max(abs(eig(F+Gtot*K)));
