@@ -50,7 +50,6 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
 alpha=2;
 r=0.6;
 
