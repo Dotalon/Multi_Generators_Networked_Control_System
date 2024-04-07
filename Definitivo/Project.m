@@ -265,7 +265,7 @@ ContStrucDi=[ 1 1 0 0 0
 % Centralized
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 [K_C2_CT,rho_C2_CT,feas_C2_CT]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-[K_C3_CT,rho_C3_CT,feas_C3_CT]=LMI_CT_EIG_CIRCLE(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+[K_C3_CT,rho_C3_CT,feas_C3_CT]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
 [K_C4_CT,rho_C4_CT,feas_C4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
 [K_C5_CT,rho_C5_CT,feas_C5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
