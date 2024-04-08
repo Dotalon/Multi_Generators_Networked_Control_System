@@ -266,21 +266,21 @@ ContStrucDi=   [ 1 1 0 0 1
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 [K_C2_CT,rho_C2_CT,feas_C2_CT]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
 [K_C3_CT,rho_C3_CT,feas_C3_CT]=LMI_CT_EIG_CIRCLE(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
-[K_C4_CT,rho_C4_CT,feas_C4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
+[K_C4_CT,rho_C4_CT,feas_C4_CT]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucC); %eig in region
 [K_C5_CT,rho_C5_CT,feas_C5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
 % Decentralized
 [K_De_CT,rho_De_CT,feas_De_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDe); %control gains for stability only
 [K_De2_CT,rho_De2_CT,feas_De2_CT]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDe); %control gains that put eigs of (A+B*K_c2) before -alpha
 [K_De3_CT,rho_De3_CT,feas_De3_CT]=LMI_CT_EIG_CIRCLE(A,Bdec,Cdec,N,ContStrucDe); %why unfeasible prob if it does what I want?
-[K_De4_CT,rho_De4_CT,feas_De4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDe); %eig in region
+[K_De4_CT,rho_De4_CT,feas_De4_CT]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucDe); %eig in region
 [K_De5_CT,rho_De5_CT,feas_De5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDe); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
 % Distributed
 [K_Di_CT,rho_Di_CT,feas_Di_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDi); %control gains for stability only
 [K_Di2_CT,rho_Di2_CT,feas_Di2_CT]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDi); %control gains that put eigs of (A+B*K_c2) before -alpha
 [K_Di3_CT,rho_Di3_CT,feas_Di3_CT]=LMI_CT_EIG_CIRCLE(A,Bdec,Cdec,N,ContStrucDi); %why unfeasible prob if it does what I want?
-[K_Di4_CT,rho_Di4_CT,feas_Di4_CT]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi); %eig in region
+[K_Di4_CT,rho_Di4_CT,feas_Di4_CT]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucDi); %eig in region
 [K_Di5_CT,rho_Di5_CT,feas_Di5_CT]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi); %minimize H2 norm[K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 
 %%  #### Discrete time Control Gains ####
