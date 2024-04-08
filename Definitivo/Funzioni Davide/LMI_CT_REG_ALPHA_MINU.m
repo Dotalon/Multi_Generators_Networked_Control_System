@@ -1,4 +1,4 @@
-function [K4,rho4,feas4]=LMI_CT_REG_ALPHA_MINU(A,B,C,N,ContStruc)
+function [K4,rho4,feas4,kappaL]=LMI_CT_REG_ALPHA_MINU(A,B,C,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -46,18 +46,26 @@ else
                 L(minc+1:minc+m(i),ninc+1:ninc+n(j))=zeros(m(i),n(j));
             end
             ninc=ninc+n(j);
+            
         end
         minc=minc+m(i);
     end  
 end
-% N=[]
-theta=pi/6;
-alpha=0.5;
+
+theta=pi/4;
+alpha=0.3;
 kL=sdpvar(1,1);
 kY=sdpvar(1,1);
 
-LMIconstr=[[sin(theta)*(A*Y+Y*A'+Btot*L+L'*Btot')    cos(theta)*(A*Y-Y*A'+Btot*L-L'*Btot');
-            cos(theta)*(-A*Y+Y*A'-Btot*L+L'*Btot')      sin(theta)*(A*Y+Y*A'+Btot*L+L'*Btot')]<=(-1e-2*eye(ntot*2))]+[Y*A'+A*Y+Btot*L+L'*Btot'+2*alpha*Y<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)];
+LMIconstr=[[sin(theta)*((A*Y+Y*A')+(Btot*L+L'*Btot'))    cos(theta)*(A*Y-Y*A'+Btot*L-L'*Btot');
+            cos(theta)*(-A*Y+Y*A'-Btot*L+L'*Btot')      sin(theta)*(A*Y+Y*A'+Btot*L+L'*Btot')]<=(-1e-2*eye(ntot*2))];
+
+LMIconstr=LMIconstr+[Y>=1e-2*eye(ntot)];
+
+LMIconstr=LMIconstr+[kL>=1e-2];
+LMIconstr=LMIconstr+[kY>=1e-2];
+
+LMIconstr=LMIconstr+[Y*A'+A*Y+Btot*L+L'*Btot'+2*alpha*Y<=-1e-2*eye(ntot)];
 
 LMIconstr=LMIconstr+[[kL*eye(ntot)   L'; L eye(mtot)]>=1e-2*eye(ntot+mtot)];
 
@@ -72,3 +80,4 @@ Y=double(Y);
 
 K4=L/Y;
 rho4=max(real(eig(A+Btot*K4)));
+kappaL=double(kL);
