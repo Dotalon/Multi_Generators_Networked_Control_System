@@ -125,11 +125,11 @@ plot_eig_DT(F ,0, -1)
 
 Tfinal=60;
 T=[0:0.01:Tfinal];
-x0=[];
-for i=1:N
-    x0=[x0;randn(n_states,1)];     %random vector of initial states
-end
-
+% x0=[];
+% for i=1:N
+%     x0=[x0;randn(n_states,1)];     %random vector of initial states
+% end
+load x0.mat;
 k=0;
 for t=T
     k=k+1;
