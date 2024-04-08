@@ -252,11 +252,11 @@ ContStrucDe=diag(ones(N,1));
 
 %% Distributed Fixed Modes
 rounding_n=3;
-ContStrucDi=[ 1 1 0 0 0
-              1 1 1 0 1
-              0 1 1 1 0
-              0 0 1 1 1
-              0 1 0 1 1];
+ContStrucDi=   [ 1 1 0 0 1
+                 0 1 1 0 0
+                 1 1 1 1 1
+                 0 0 0 1 0  %%PROBLEM: optimization outputs a matrix with no inputs on the 4th system! 
+                 1 0 0 1 1];
 
 [CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n) %as expected since no decentralized
 [DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n) %as expected
