@@ -132,9 +132,9 @@ ContStrucC=ones(N,N);
 
 [K_c,rho_c,feas_c]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
 [K_c2,rho_c2,feas_c2]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucC); %control gains that put eigs of (A+B*K_c2) before -alpha
-% [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
-[K_c4,rho_c4,feas_c4]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucC); %eig in region
-[K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm
+ [K_c3,rho_c3,feas_c3]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucC); %why unfeasible prob if it does what I want?
+[K_c4,rho_c4,feas_c4]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucC); %eig in region
+%[K_c5,rho_c5,feas_c5]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucC); %minimize H2 norm
 
 
 %% decentralized fixed modes
@@ -146,8 +146,8 @@ ContStrucDe=diag(ones(N,1));
 [K_c_DE,rho_c_DE,feas_c_DE]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDe);
 [K_c2_DE,rho_c2_DE,feas_c2_DE]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDe);
 [K_c3_DE,rho_c3_DE,feas_c3_DE]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucDe);
-[K_c4_DE,rho_c4_DE,feas_c4_DE]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDe);
-[K_c5_DE,rho_c5_DE,feas_c5_DE]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDe);
+[K_c4_DE,rho_c4_DE,feas_c4_DE]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucDe);
+%[K_c5_DE,rho_c5_DE,feas_c5_DE]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDe);
 
 
 %% distributed fixed modes
@@ -163,8 +163,8 @@ ContStrucDi=[ 1 1 0 0 0
 [K_c_Di,rho_c_Di,feas_c_Di]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucDi);
 [K_c2_Di,rho_c2_Di,feas_c2_Di]=LMI_CT_EIG_TRESH(A,Bdec,Cdec,N,ContStrucDi);
 [K_c3_Di,rho_c3_Di,feas_c3_Di]=LMI_CT_CIRCLE_EIG(A,Bdec,Cdec,N,ContStrucDi);
-[K_c4_Di,rho_c4_Di,feas_c4_Di]=LMI_CT_REGION(A,Bdec,Cdec,N,ContStrucDi);
-[K_c5_Di,rho_c5_Di,feas_c5_Di]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi);
+[K_c4_Di,rho_c4_Di,feas_c4_Di]=LMI_CT_REG_ALPHA_MINU(A,Bdec,Cdec,N,ContStrucDi);
+%[K_c5_Di,rho_c5_Di,feas_c5_Di]=LMI_CT_H2(A,Bdec,Cdec,N,ContStrucDi);
 
 
 
@@ -201,12 +201,12 @@ for t=T
     x_region_Di(:,k)=expm((A+B*K_c4_Di)*t)*x0;
     u_region_Di=K_c4*x_region_Di;
 
-    x_H2(:,k)=expm((A+B*K_c5)*t)*x0;
-    u_H2=K_c5*x_H2;
-    x_H2_DE(:,k)=expm((A+B*K_c5_DE)*t)*x0;
-    u_H2_DE=K_c5_DE*x_H2_DE;
-    x_H2_Di(:,k)=expm((A+B*K_c5_Di)*t)*x0;
-    u_H2_Di=K_c5_Di*x_H2_Di;
+%     x_H2(:,k)=expm((A+B*K_c5)*t)*x0;
+%     u_H2=K_c5*x_H2;
+%     x_H2_DE(:,k)=expm((A+B*K_c5_DE)*t)*x0;
+%     u_H2_DE=K_c5_DE*x_H2_DE;
+%     x_H2_Di(:,k)=expm((A+B*K_c5_Di)*t)*x0;
+%     u_H2_Di=K_c5_Di*x_H2_Di;
 
 end
 figure
@@ -292,6 +292,7 @@ end
 title('Distributed eig in region')
 
 
+%% 
 figure
 subplot(3,1,1)
 for n=1:N
