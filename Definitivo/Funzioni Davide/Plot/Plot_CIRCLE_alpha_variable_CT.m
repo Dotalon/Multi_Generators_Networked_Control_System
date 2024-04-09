@@ -213,10 +213,10 @@ end
  end
 
 %% Distributed 2
-[K_Di2_CT_1,rho_Di1_CT_1,feas_Di1_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 2, 1);
-[K_Di2_CT_2,rho_Di1_CT_2,feas_Di1_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 3, 1);
-[K_Di2_CT_3,rho_Di1_CT_3,feas_Di1_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 4, 1);
-[K_Di2_CT_4,rho_Di1_CT_4,feas_Di1_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 1);
+[K_Di2_CT_1,rho_Di2_CT_1,feas_Di2_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 2, 1);
+[K_Di2_CT_2,rho_Di2_CT_2,feas_Di2_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 3, 1);
+[K_Di2_CT_3,rho_Di2_CT_3,feas_Di2_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 4, 1);
+[K_Di2_CT_4,rho_Di2_CT_4,feas_Di2_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 1);
 
 k=0;
 for t=T

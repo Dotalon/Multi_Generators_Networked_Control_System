@@ -73,7 +73,7 @@ C2=eye(4);
 C3=eye(4);
 C4=eye(4);
 C5=eye(4);
-%Ctot is an identity! all states are measurable!
+%CTot is an identity! all states are measurable!
 
 % centralized model matrices:
     
@@ -126,21 +126,20 @@ ContStrucDe=diag(ones(N,1));
 
 load('x0.mat')
 %% Centralized
-Tfinal=7;
+Tfinal=30;
 T=0:0.01:Tfinal;
 
-[K_C_CT_1,rho_C_CT_1,feas_C_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 5, 1);
-[K_C_CT_2,rho_C_CT_2,feas_C_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 5, 2);
-[K_C_CT_3,rho_C_CT_3,feas_C_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 5, 3);
-[K_C_CT_4,rho_C_CT_4,feas_C_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 5, 4);
+[K_C_DT_1,rho_C_DT_1,feas_C_DT_1]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 0, 0.2);
+[K_C_DT_2,rho_C_DT_2,feas_C_DT_2]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 0.2, 0.2);
+[K_C_DT_3,rho_C_DT_3,feas_C_DT_3]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 0.5, 0.2);
+[K_C_DT_4,rho_C_DT_4,feas_C_DT_4]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 0.7, 0.2);
 
 k=0;
-for t=T
-    k=k+1;
-    x_C_DISK_CT_1(:,k)=expm((A+B*K_C_CT_1)*t)*x0;
-    x_C_DISK_CT_2(:,k)=expm((A+B*K_C_CT_2)*t)*x0;
-    x_C_DISK_CT_3(:,k)=expm((A+B*K_C_CT_3)*t)*x0;
-    x_C_DISK_CT_4(:,k)=expm((A+B*K_C_CT_4)*t)*x0;
+for k=1:Tfinal/h
+    x_C_DISK_DT_1(:,k)= ((F+G*K_C_DT_1)^k)*x0;
+    x_C_DISK_DT_2(:,k)= ((F+G*K_C_DT_2)^k)*x0;
+    x_C_DISK_DT_3(:,k)= ((F+G*K_C_DT_3)^k)*x0;
+    x_C_DISK_DT_4(:,k)= ((F+G*K_C_DT_4)^k)*x0;
 end
 
  figure
@@ -149,26 +148,25 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
-        plot(T,[x_C_DISK_CT_1((i)*4-(4-2),:)],'m')
-        plot(T,[x_C_DISK_CT_2((i)*4-(4-2),:)],'r')
-        plot(T,[x_C_DISK_CT_3((i)*4-(4-2),:)],'g')
-        plot(T,[x_C_DISK_CT_4((i)*4-(4-2),:)],'b')
-        legend('radius = 1','radius = 2','radius = 3','radius = 4')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_DISK_DT_1((i)*4-(4-2),:)],'m')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_DISK_DT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_DISK_DT_3((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_DISK_DT_4((i)*4-(4-2),:)],'b')
+        legend('alpha = 0','alpha = 0.2','alpha = 0.5','alpha = 0.7')
  end
 
 %% Decentralized
-[K_De_CT_1,rho_De_CT_1,feas_De_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 5, 1);
-[K_De_CT_2,rho_De_CT_2,feas_De_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 5, 2);
-[K_De_CT_3,rho_De_CT_3,feas_De_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 5, 3);
-[K_De_CT_4,rho_De_CT_4,feas_De_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 5, 4);
+[K_De_DT_1,rho_De_DT_1,feas_De_DT_1]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 0, 0.2);
+[K_De_DT_2,rho_De_DT_2,feas_De_DT_2]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 0.2, 0.2);
+[K_De_DT_3,rho_De_DT_3,feas_De_DT_3]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 0.5, 0.2);
+[K_De_DT_4,rho_De_DT_4,feas_De_DT_4]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 0.7, 0.2);
 
 k=0;
-for t=T
-    k=k+1;
-    x_De_DISK_CT_1(:,k)=expm((A+B*K_De_CT_1)*t)*x0;
-    x_De_DISK_CT_2(:,k)=expm((A+B*K_De_CT_2)*t)*x0;
-    x_De_DISK_CT_3(:,k)=expm((A+B*K_De_CT_3)*t)*x0;
-    x_De_DISK_CT_4(:,k)=expm((A+B*K_De_CT_4)*t)*x0;
+for k=1:Tfinal/h
+    x_De_DISK_DT_1(:,k)= ((F+G*K_De_DT_1)^k)*x0;
+    x_De_DISK_DT_2(:,k)= ((F+G*K_De_DT_2)^k)*x0;
+    x_De_DISK_DT_3(:,k)= ((F+G*K_De_DT_3)^k)*x0;
+    x_De_DISK_DT_4(:,k)= ((F+G*K_De_DT_4)^k)*x0;
 end
 
  figure
@@ -177,26 +175,25 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized}'])
-        plot(T,[x_De_DISK_CT_1((i)*4-(4-2),:)],'m')
-        plot(T,[x_De_DISK_CT_2((i)*4-(4-2),:)],'r')
-        plot(T,[x_De_DISK_CT_3((i)*4-(4-2),:)],'g')
-        plot(T,[x_De_DISK_CT_4((i)*4-(4-2),:)],'b')
-        legend('radius = 1','radius = 2','radius = 3','radius = 4')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_DISK_DT_1((i)*4-(4-2),:)],'m')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_DISK_DT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_DISK_DT_3((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_DISK_DT_4((i)*4-(4-2),:)],'b')
+        legend('alpha = 0','alpha = 0.2','alpha = 0.5','alpha = 0.7')
  end
 
 %% Distributed 1
-[K_Di1_CT_1,rho_Di1_CT_1,feas_Di1_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 5, 1);
-[K_Di1_CT_2,rho_Di1_CT_2,feas_Di1_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 5, 2);
-[K_Di1_CT_3,rho_Di1_CT_3,feas_Di1_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 5, 3);
-[K_Di1_CT_4,rho_Di1_CT_4,feas_Di1_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 5, 4);
+[K_Di1_DT_1,rho_Di1_DT_1,feas_Di1_DT_1]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 0, 0.2);
+[K_Di1_DT_2,rho_Di1_DT_2,feas_Di1_DT_2]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 0.2, 0.2);
+[K_Di1_DT_3,rho_Di1_DT_3,feas_Di1_DT_3]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 0.5, 0.2);
+[K_Di1_DT_4,rho_Di1_DT_4,feas_Di1_DT_4]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 0.7, 0.2);
 
 k=0;
-for t=T
-    k=k+1;
-    x_Di1_DISK_CT_1(:,k)=expm((A+B*K_Di1_CT_1)*t)*x0;
-    x_Di1_DISK_CT_2(:,k)=expm((A+B*K_Di1_CT_2)*t)*x0;
-    x_Di1_DISK_CT_3(:,k)=expm((A+B*K_Di1_CT_3)*t)*x0;
-    x_Di1_DISK_CT_4(:,k)=expm((A+B*K_Di1_CT_4)*t)*x0;
+for k=1:Tfinal/h
+    x_Di1_DISK_DT_1(:,k)= ((F+G*K_Di1_DT_1)^k)*x0;
+    x_Di1_DISK_DT_2(:,k)= ((F+G*K_Di1_DT_2)^k)*x0;
+    x_Di1_DISK_DT_3(:,k)= ((F+G*K_Di1_DT_3)^k)*x0;
+    x_Di1_DISK_DT_4(:,k)= ((F+G*K_Di1_DT_4)^k)*x0;
 end
 
  figure
@@ -205,26 +202,25 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed_1}'])
-        plot(T,[x_Di1_DISK_CT_1((i)*4-(4-2),:)],'m')
-        plot(T,[x_Di1_DISK_CT_2((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di1_DISK_CT_3((i)*4-(4-2),:)],'g')
-        plot(T,[x_Di1_DISK_CT_4((i)*4-(4-2),:)],'b')
-        legend('radius = 1','radius = 2','radius = 3','radius = 4')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_1((i)*4-(4-2),:)],'m')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_3((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_4((i)*4-(4-2),:)],'b')
+        legend('alpha = 0','alpha = 0.2','alpha = 0.5','alpha = 0.7')
  end
 
 %% Distributed 2
-[K_Di2_CT_1,rho_Di2_CT_1,feas_Di2_CT_1]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 1);
-[K_Di2_CT_2,rho_Di2_CT_2,feas_Di2_CT_2]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 2);
-[K_Di2_CT_3,rho_Di2_CT_3,feas_Di2_CT_3]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 3);
-[K_Di2_CT_4,rho_Di2_CT_4,feas_Di2_CT_4]=LMI_CT_EIG_CIRCLE_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 5, 4);
+[K_Di2_DT_1,rho_Di2_DT_1,feas_Di2_DT_1]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 0, 0.2);
+[K_Di2_DT_2,rho_Di2_DT_2,feas_Di2_DT_2]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 0.2, 0.2);
+[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 0.5, 0.2);
+[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_EIG_CIRCLE_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 0.7, 0.2);
 
 k=0;
-for t=T
-    k=k+1;
-    x_Di2_DISK_CT_1(:,k)=expm((A+B*K_Di2_CT_1)*t)*x0;
-    x_Di2_DISK_CT_2(:,k)=expm((A+B*K_Di2_CT_2)*t)*x0;
-    x_Di2_DISK_CT_3(:,k)=expm((A+B*K_Di2_CT_3)*t)*x0;
-    x_Di2_DISK_CT_4(:,k)=expm((A+B*K_Di2_CT_4)*t)*x0;
+for k=1:Tfinal/h
+    x_Di2_DISK_DT_1(:,k)= ((F+G*K_Di2_DT_1)^k)*x0;
+    x_Di2_DISK_DT_2(:,k)= ((F+G*K_Di2_DT_2)^k)*x0;
+    x_Di2_DISK_DT_3(:,k)= ((F+G*K_Di2_DT_3)^k)*x0;
+    x_Di2_DISK_DT_4(:,k)= ((F+G*K_Di2_DT_4)^k)*x0;
 end
 
  figure
@@ -233,29 +229,29 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed_2}'])
-        plot(T,[x_Di2_DISK_CT_1((i)*4-(4-2),:)],'m')
-        plot(T,[x_Di2_DISK_CT_2((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di2_DISK_CT_3((i)*4-(4-2),:)],'g')
-        plot(T,[x_Di2_DISK_CT_4((i)*4-(4-2),:)],'b')
-        legend('radius = 1','radius = 2','radius = 3','radius = 4')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_1((i)*4-(4-2),:)],'m')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_3((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_4((i)*4-(4-2),:)],'b')
+        legend('alpha = 0','alpha = 0.2','alpha = 0.5','alpha = 0.7')
  end
 %% Eigenvalues
- plot_eig_CT(A+B*K_C_CT_1, 5, 1)
- plot_eig_CT(A+B*K_C_CT_2, 5, 2)
- plot_eig_CT(A+B*K_C_CT_3, 5, 3)
- plot_eig_CT(A+B*K_C_CT_4, 5, 4)
+ plot_eig_DT(F+G*K_C_DT_1, 0, 0.2)
+ plot_eig_DT(F+G*K_C_DT_2, 0.2, 0.2)
+ plot_eig_DT(F+G*K_C_DT_3, 0.5, 0.2)
+ plot_eig_DT(F+G*K_C_DT_4, 0.7, 0.2)
 
- plot_eig_CT(A+B*K_De_CT_1, 5, 1)
- plot_eig_CT(A+B*K_De_CT_2, 5, 2)
- plot_eig_CT(A+B*K_De_CT_3, 5, 3)
- plot_eig_CT(A+B*K_De_CT_4, 5, 4)
+ plot_eig_DT(F+G*K_De_DT_1, 0, 0.2)
+ plot_eig_DT(F+G*K_De_DT_2, 0.2, 0.2)
+ plot_eig_DT(F+G*K_De_DT_3, 0.5, 0.2)
+ plot_eig_DT(F+G*K_De_DT_4, 0.7, 0.2)
 
- plot_eig_CT(A+B*K_Di1_CT_1, 5, 1)
- plot_eig_CT(A+B*K_Di1_CT_2, 5, 2)
- plot_eig_CT(A+B*K_Di1_CT_3, 5, 3)
- plot_eig_CT(A+B*K_Di1_CT_4, 5, 4)
+ plot_eig_DT(F+G*K_Di1_DT_1, 0, 0.2)
+ plot_eig_DT(F+G*K_Di1_DT_2, 0.2, 0.2)
+ plot_eig_DT(F+G*K_Di1_DT_3, 0.5, 0.2)
+ plot_eig_DT(F+G*K_Di1_DT_4, 0.7, 0.2)
 
- plot_eig_CT(A+B*K_Di2_CT_1, 5, 1)
- plot_eig_CT(A+B*K_Di2_CT_2, 5, 2)
- plot_eig_CT(A+B*K_Di2_CT_3, 5, 3)
- plot_eig_CT(A+B*K_Di2_CT_4, 5, 4)
+ plot_eig_DT(F+G*K_Di2_DT_1, 0, 0.2)
+ plot_eig_DT(F+G*K_Di2_DT_2, 0.2, 0.2)
+ plot_eig_DT(F+G*K_Di2_DT_3, 0.5, 0.2)
+ plot_eig_DT(F+G*K_Di2_DT_4, 0.7, 0.2)

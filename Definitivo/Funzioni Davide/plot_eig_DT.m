@@ -31,7 +31,7 @@ eigenvaluesDT = eig(F);
     grid on 
     hold on
     plot(real(eigenvaluesDT), imag(eigenvaluesDT), '*')
-    disk = circle(-1*alpha,0,radius);
+    disk = circle(alpha,0,radius);
     hold off
     title('Eigenvalues')
     xlabel('Re')

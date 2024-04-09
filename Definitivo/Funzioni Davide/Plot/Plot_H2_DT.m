@@ -129,22 +129,21 @@ load('x0.mat')
 Tfinal=7;
 T=0:0.01:Tfinal;
 
-[K_C_CT_1,rho_C_CT_1,feas_C_CT_1]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 1, 0.5);
-[K_C_CT_2,rho_C_CT_2,feas_C_CT_2]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 2, 0.5);
-[K_C_CT_3,rho_C_CT_3,feas_C_CT_3]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 1, 2);
-[K_C_CT_4,rho_C_CT_4,feas_C_CT_4]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 2, 2);
-[K_C_CT_5,rho_C_CT_5,feas_C_CT_5]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 1, 10);
-[K_C_CT_6,rho_C_CT_6,feas_C_CT_6]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 2, 10);
+[K_C_DT_1,rho_C_DT_1,feas_C_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 0.5);
+[K_C_DT_2,rho_C_DT_2,feas_C_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 0.5);
+[K_C_DT_3,rho_C_DT_3,feas_C_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 2);
+[K_C_DT_4,rho_C_DT_4,feas_C_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 2);
+[K_C_DT_5,rho_C_DT_5,feas_C_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 10);
+[K_C_DT_6,rho_C_DT_6,feas_C_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 10);
 
 k=0;
-for t=T
-    k=k+1;
-    x_C_H2_CT_1(:,k)=expm((A+B*K_C_CT_1)*t)*x0;
-    x_C_H2_CT_2(:,k)=expm((A+B*K_C_CT_2)*t)*x0;
-    x_C_H2_CT_3(:,k)=expm((A+B*K_C_CT_3)*t)*x0;
-    x_C_H2_CT_4(:,k)=expm((A+B*K_C_CT_4)*t)*x0;
-    x_C_H2_CT_5(:,k)=expm((A+B*K_C_CT_5)*t)*x0;
-    x_C_H2_CT_6(:,k)=expm((A+B*K_C_CT_6)*t)*x0;
+for k=1:Tfinal/h
+    x_C_H2_DT_1(:,k)=((F+G*K_C_DT_1)^k)*x0;
+    x_C_H2_DT_2(:,k)=((F+G*K_C_DT_2)^k)*x0;
+    x_C_H2_DT_3(:,k)=((F+G*K_C_DT_3)^k)*x0;
+    x_C_H2_DT_4(:,k)=((F+G*K_C_DT_4)^k)*x0;
+    x_C_H2_DT_5(:,k)=((F+G*K_C_DT_5)^k)*x0;
+    x_C_H2_DT_6(:,k)=((F+G*K_C_DT_6)^k)*x0;
 end
 
  figure
@@ -153,9 +152,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with Q=D'])
-        plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -165,9 +164,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with Q=I'])
-        plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -177,8 +176,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with r=0.5'])
-        plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_C_H2_CT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_2((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -188,8 +187,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with r=2'])
-        plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'b')
-        plot(T,[x_C_H2_CT_4((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_4((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -199,27 +198,26 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with r=10'])
-        plot(T,[x_C_H2_CT_5((i)*4-(4-2),:)],'b')
-        plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_5((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 %% Decentralized
-[K_De_CT_1,rho_De_CT_1,feas_De_CT_1]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 1, 0.5);
-[K_De_CT_2,rho_De_CT_2,feas_De_CT_2]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 2, 0.5);
-[K_De_CT_3,rho_De_CT_3,feas_De_CT_3]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 1, 2);
-[K_De_CT_4,rho_De_CT_4,feas_De_CT_4]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 2, 2);
-[K_De_CT_5,rho_De_CT_5,feas_De_CT_5]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 1, 10);
-[K_De_CT_6,rho_De_CT_6,feas_De_CT_6]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucDe, 2, 10);
+[K_De_DT_1,rho_De_DT_1,feas_De_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 0.5);
+[K_De_DT_2,rho_De_DT_2,feas_De_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 0.5);
+[K_De_DT_3,rho_De_DT_3,feas_De_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 2);
+[K_De_DT_4,rho_De_DT_4,feas_De_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 2);
+[K_De_DT_5,rho_De_DT_5,feas_De_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 10);
+[K_De_DT_6,rho_De_DT_6,feas_De_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 10);
 
 k=0;
-for t=T
-    k=k+1;
-    x_De_H2_CT_1(:,k)=expm((A+B*K_De_CT_1)*t)*x0;
-    x_De_H2_CT_2(:,k)=expm((A+B*K_De_CT_2)*t)*x0;
-    x_De_H2_CT_3(:,k)=expm((A+B*K_De_CT_3)*t)*x0;
-    x_De_H2_CT_4(:,k)=expm((A+B*K_De_CT_4)*t)*x0;
-    x_De_H2_CT_5(:,k)=expm((A+B*K_De_CT_5)*t)*x0;
-    x_De_H2_CT_6(:,k)=expm((A+B*K_De_CT_6)*t)*x0;
+for k=1:Tfinal/h
+    x_De_H2_DT_1(:,k)=((F+G*K_De_DT_1)^k)*x0;
+    x_De_H2_DT_2(:,k)=((F+G*K_De_DT_2)^k)*x0;
+    x_De_H2_DT_3(:,k)=((F+G*K_De_DT_3)^k)*x0;
+    x_De_H2_DT_4(:,k)=((F+G*K_De_DT_4)^k)*x0;
+    x_De_H2_DT_5(:,k)=((F+G*K_De_DT_5)^k)*x0;
+    x_De_H2_DT_6(:,k)=((F+G*K_De_DT_6)^k)*x0;
 end
 
  figure
@@ -228,9 +226,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized} with Q=D'])
-        plot(T,[x_De_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_De_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_De_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -240,9 +238,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized} with Q=I'])
-        plot(T,[x_De_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_De_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_De_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -252,8 +250,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized} with r=0.5'])
-        plot(T,[x_De_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_De_H2_CT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_2((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -263,8 +261,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized} with r=2'])
-        plot(T,[x_De_H2_CT_3((i)*4-(4-2),:)],'b')
-        plot(T,[x_De_H2_CT_4((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_4((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -274,27 +272,26 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Decentralized} with r=10'])
-        plot(T,[x_De_H2_CT_5((i)*4-(4-2),:)],'b')
-        plot(T,[x_De_H2_CT_6((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_5((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 %% Distributed 1
-[K_Di1_CT_1,rho_Di1_CT_1,feas_Di1_CT_1]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 1, 0.5);
-[K_Di1_CT_2,rho_Di1_CT_2,feas_Di1_CT_2]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 2, 0.5);
-[K_Di1_CT_3,rho_Di1_CT_3,feas_Di1_CT_3]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 1, 2);
-[K_Di1_CT_4,rho_Di1_CT_4,feas_Di1_CT_4]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 2, 2);
-[K_Di1_CT_5,rho_Di1_CT_5,feas_Di1_CT_5]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 1, 10);
-[K_Di1_CT_6,rho_Di1_CT_6,feas_Di1_CT_6]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_Pij, 2, 10);
+[K_Di1_DT_1,rho_Di1_DT_1,feas_Di1_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 1, 0.5);
+[K_Di1_DT_2,rho_Di1_DT_2,feas_Di1_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 2, 0.5);
+[K_Di1_DT_3,rho_Di1_DT_3,feas_Di1_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 1, 2);
+[K_Di1_DT_4,rho_Di1_DT_4,feas_Di1_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 2, 2);
+[K_Di1_DT_5,rho_Di1_DT_5,feas_Di1_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 1, 10);
+[K_Di1_DT_6,rho_Di1_DT_6,feas_Di1_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_Pij, 2, 10);
 
 k=0;
-for t=T
-    k=k+1;
-    x_Di1_H2_CT_1(:,k)=expm((A+B*K_Di1_CT_1)*t)*x0;
-    x_Di1_H2_CT_2(:,k)=expm((A+B*K_Di1_CT_2)*t)*x0;
-    x_Di1_H2_CT_3(:,k)=expm((A+B*K_Di1_CT_3)*t)*x0;
-    x_Di1_H2_CT_4(:,k)=expm((A+B*K_Di1_CT_4)*t)*x0;
-    x_Di1_H2_CT_5(:,k)=expm((A+B*K_Di1_CT_5)*t)*x0;
-    x_Di1_H2_CT_6(:,k)=expm((A+B*K_Di1_CT_6)*t)*x0;
+for k=1:Tfinal/h
+    x_Di1_H2_DT_1(:,k)=((F+G*K_Di1_DT_1)^k)*x0;
+    x_Di1_H2_DT_2(:,k)=((F+G*K_Di1_DT_2)^k)*x0;
+    x_Di1_H2_DT_3(:,k)=((F+G*K_Di1_DT_3)^k)*x0;
+    x_Di1_H2_DT_4(:,k)=((F+G*K_Di1_DT_4)^k)*x0;
+    x_Di1_H2_DT_5(:,k)=((F+G*K_Di1_DT_5)^k)*x0;
+    x_Di1_H2_DT_6(:,k)=((F+G*K_Di1_DT_6)^k)*x0;
 end
 
  figure
@@ -303,9 +300,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1} with Q=D'])
-        plot(T,[x_Di1_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di1_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di1_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -315,9 +312,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1} with Q=I'])
-        plot(T,[x_Di1_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di1_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di1_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -327,8 +324,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1} with r=0.5'])
-        plot(T,[x_Di1_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di1_H2_CT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_2((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -338,8 +335,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1} with r=2'])
-        plot(T,[x_Di1_H2_CT_3((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di1_H2_CT_4((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_3((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_4((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -349,27 +346,26 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1} with r=10'])
-        plot(T,[x_Di1_H2_CT_5((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di1_H2_CT_6((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_5((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_6((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 %% Distributed 2
-[K_Di2_CT_1,rho_Di2_CT_1,feas_Di2_CT_1]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 1, 0.5);
-[K_Di2_CT_2,rho_Di2_CT_2,feas_Di2_CT_2]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 2, 0.5);
-[K_Di2_CT_3,rho_Di2_CT_3,feas_Di2_CT_3]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 1, 2);
-[K_Di2_CT_4,rho_Di2_CT_4,feas_Di2_CT_4]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 2, 2);
-[K_Di2_CT_5,rho_Di2_CT_5,feas_Di2_CT_5]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 1, 10);
-[K_Di2_CT_6,rho_Di2_CT_6,feas_Di2_CT_6]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStruc_REBiStar, 2, 10);
+[K_Di2_DT_1,rho_Di2_DT_1,feas_Di2_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 0.5);
+[K_Di2_DT_2,rho_Di2_DT_2,feas_Di2_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 0.5);
+[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 2);
+[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 2);
+[K_Di2_DT_5,rho_Di2_DT_5,feas_Di2_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 10);
+[K_Di2_DT_6,rho_Di2_DT_6,feas_Di2_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 10);
 
 k=0;
-for t=T
-    k=k+1;
-    x_Di2_H2_CT_1(:,k)=expm((A+B*K_Di2_CT_1)*t)*x0;
-    x_Di2_H2_CT_2(:,k)=expm((A+B*K_Di2_CT_2)*t)*x0;
-    x_Di2_H2_CT_3(:,k)=expm((A+B*K_Di2_CT_3)*t)*x0;
-    x_Di2_H2_CT_4(:,k)=expm((A+B*K_Di2_CT_4)*t)*x0;
-    x_Di2_H2_CT_5(:,k)=expm((A+B*K_Di2_CT_5)*t)*x0;
-    x_Di2_H2_CT_6(:,k)=expm((A+B*K_Di2_CT_6)*t)*x0;
+for k=1:Tfinal/h
+    x_Di2_H2_DT_1(:,k)=((F+G*K_Di2_DT_1)^k)*x0;
+    x_Di2_H2_DT_2(:,k)=((F+G*K_Di2_DT_2)^k)*x0;
+    x_Di2_H2_DT_3(:,k)=((F+G*K_Di2_DT_3)^k)*x0;
+    x_Di2_H2_DT_4(:,k)=((F+G*K_Di2_DT_4)^k)*x0;
+    x_Di2_H2_DT_5(:,k)=((F+G*K_Di2_DT_5)^k)*x0;
+    x_Di2_H2_DT_6(:,k)=((F+G*K_Di2_DT_6)^k)*x0;
 end
 
  figure
@@ -378,9 +374,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2} with Q=D'])
-        plot(T,[x_Di2_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di2_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -390,9 +386,9 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2} with Q=I'])
-        plot(T,[x_Di2_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di2_H2_CT_3((i)*4-(4-2),:)],'r')
-        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'g')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_3((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_6((i)*4-(4-2),:)],'g')
         legend('r = 0.5','r = 2','r = 10')
  end
 
@@ -402,8 +398,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2} with r=0.5'])
-        plot(T,[x_Di2_H2_CT_1((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di2_H2_CT_2((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_1((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_2((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -413,8 +409,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2} with r=2'])
-        plot(T,[x_Di2_H2_CT_3((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di2_H2_CT_4((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_3((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_4((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -424,8 +420,8 @@ end
         hold on
         grid on
         title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2} with r=10'])
-        plot(T,[x_Di2_H2_CT_5((i)*4-(4-2),:)],'b')
-        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'r')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_5((i)*4-(4-2),:)],'b')
+        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_6((i)*4-(4-2),:)],'r')
         legend('Q = D','Q = I')
  end
 
@@ -436,10 +432,10 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])
- %        plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_1((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_1((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_1((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_1((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_1((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
  % 
@@ -449,10 +445,10 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])    
- %        plot(T,[x_C_H2_CT_2((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_2((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_2((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_2((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_2((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_2((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_2((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_2((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
  % 
@@ -462,10 +458,10 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])
- %        plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_3((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_3((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_3((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_3((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_3((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
  % 
@@ -475,10 +471,10 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])
- %        plot(T,[x_C_H2_CT_4((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_4((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_4((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_4((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_4((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_4((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_4((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_4((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
  % 
@@ -488,10 +484,10 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])
- %        plot(T,[x_C_H2_CT_5((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_5((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_5((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_5((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_5((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_5((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_5((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_5((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
  % 
@@ -501,9 +497,9 @@ end
  %        hold on
  %        grid on
  %        title(['\Delta\omega_{',num2str(i),'}'])
- %        plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'m')
- %        plot(T,[x_De_H2_CT_6((i)*4-(4-2),:)],'r')
- %        plot(T,[x_Di1_H2_CT_6((i)*4-(4-2),:)],'b')
- %        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'g')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'m')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'r')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di1_H2_DT_6((i)*4-(4-2),:)],'b')
+ %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_6((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
