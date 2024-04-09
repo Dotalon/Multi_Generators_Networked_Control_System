@@ -260,17 +260,6 @@ ContStrucDe=diag(ones(N,1));
 [CFMDe]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDe, rounding_n) %No decentralized FM CT =NO FM in general
 [DFMDe]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n) %No dec FM DT
 
-%% Distributed Fixed Modes
-rounding_n=3;
-ContStrucDi=   [ 1 1 0 0 1
-                 0 1 1 0 0
-                 1 1 1 1 1
-                 0 0 0 1 0  %%PROBLEM: optimization outputs a matrix with no inputs on the 4th system! 
-                 1 0 0 1 1];
-
-[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n) %as expected since no decentralized
-[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n) %as expected
-
 %% #### Conituous time Control Gains ####
 % Centralized
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
@@ -1536,7 +1525,7 @@ figure
         legend('H2 Distributed DT')
  end
 
-%% Eigenvalues comparion on different control laws
+%% Eigenvalues comparison on different control laws
 eigenvaluesDT = eig(F+G*K_C_DT);
     figure()
     grid on
