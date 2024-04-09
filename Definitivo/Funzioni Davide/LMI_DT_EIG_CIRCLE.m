@@ -52,13 +52,23 @@ else
 end
 % N=[]
 rho=0.4;
-alpha=0.5;
+alpha=-0.5;
+kL=sdpvar(1,1);
+kP=sdpvar(1,1);
 
 LMIconstr=[[(rho^2-alpha^2)*P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-alpha*(P*F'+F*P+L'*Gtot'+Gtot*L)     Gtot*L;
             L'*Gtot'                               P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
-options=sdpsettings('solver','sdpt3');
+
+LMIconstr=LMIconstr+[[kL*eye(ntot)   L'; 
+                        L             eye(mtot)]>=1e-2*eye(ntot+mtot)];
+
+LMIconstr=LMIconstr+[[kP*eye(ntot)  eye(ntot); 
+                        eye(ntot)           P]>=1e-2*eye(ntot*2)];
+
+options=sdpsettings('solver','sedumi');
+Cost_funct=0.01*kL+10*kP;
 % Obj=norm(L,2)   %largest singular value of matrix L=K*Y
-J=optimize(LMIconstr,[],options);   %don't really understand why it crashes if I specify that I want to minimize smth about L, as in his examples
+J=optimize(LMIconstr,Cost_funct,options);   %don't really understand why it crashes if I specify that I want to minimize smth about L, as in his examples
 feas2=J.problem;
 L=double(L);
 P=double(P);
