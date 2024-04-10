@@ -126,7 +126,7 @@ ContStrucDe=diag(ones(N,1));
 
 load('x0.mat')
 %% Centralized
-Tfinal=7;
+Tfinal=45;
 T=0:0.01:Tfinal;
 
 [K_C_CT_1,rho_C_CT_1,feas_C_CT_1]=LMI_CT_H2_VARIABLE(A,Bdec,Cdec,N,ContStrucC, 1, 0.5);

@@ -131,19 +131,19 @@ T=0:0.01:Tfinal;
 
 [K_C_DT_1,rho_C_DT_1,feas_C_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 0.5);
 [K_C_DT_2,rho_C_DT_2,feas_C_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 0.5);
-[K_C_DT_3,rho_C_DT_3,feas_C_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 2);
-[K_C_DT_4,rho_C_DT_4,feas_C_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 2);
-[K_C_DT_5,rho_C_DT_5,feas_C_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 10);
-[K_C_DT_6,rho_C_DT_6,feas_C_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 10);
+[K_C_DT_3,rho_C_DT_3,feas_C_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 50);
+[K_C_DT_4,rho_C_DT_4,feas_C_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 50);
+[K_C_DT_5,rho_C_DT_5,feas_C_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 100);
+[K_C_DT_6,rho_C_DT_6,feas_C_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 2, 100);
 
 k=0;
 for k=1:Tfinal/h
-    x_C_H2_DT_1(:,k)=((F+G*K_C_DT_1)^k)*x0;
-    x_C_H2_DT_2(:,k)=((F+G*K_C_DT_2)^k)*x0;
-    x_C_H2_DT_3(:,k)=((F+G*K_C_DT_3)^k)*x0;
-    x_C_H2_DT_4(:,k)=((F+G*K_C_DT_4)^k)*x0;
-    x_C_H2_DT_5(:,k)=((F+G*K_C_DT_5)^k)*x0;
-    x_C_H2_DT_6(:,k)=((F+G*K_C_DT_6)^k)*x0;
+    x_C_H2_DT_1(:,k)=((F+G*K_C_DT_1).^k)*x0;
+    x_C_H2_DT_2(:,k)=((F+G*K_C_DT_2).^k)*x0;
+    x_C_H2_DT_3(:,k)=((F+G*K_C_DT_3).^k)*x0;
+    x_C_H2_DT_4(:,k)=((F+G*K_C_DT_4).^k)*x0;
+    x_C_H2_DT_5(:,k)=((F+G*K_C_DT_5).^k)*x0;
+    x_C_H2_DT_6(:,k)=((F+G*K_C_DT_6).^k)*x0;
 end
 
  figure
@@ -151,13 +151,13 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with Q=D'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
         plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
         plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'r')
         plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'g')
-        legend('r = 0.5','r = 2','r = 10')
+        legend('r = 0.5','r = 50','r = 100')
  end
-
+%%
  figure
  for i=1:N
         subplot(N,1,1+((i-1)))
@@ -205,10 +205,10 @@ end
 %% Decentralized
 [K_De_DT_1,rho_De_DT_1,feas_De_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 0.5);
 [K_De_DT_2,rho_De_DT_2,feas_De_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 0.5);
-[K_De_DT_3,rho_De_DT_3,feas_De_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 2);
-[K_De_DT_4,rho_De_DT_4,feas_De_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 2);
-[K_De_DT_5,rho_De_DT_5,feas_De_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 10);
-[K_De_DT_6,rho_De_DT_6,feas_De_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 10);
+[K_De_DT_3,rho_De_DT_3,feas_De_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 50);
+[K_De_DT_4,rho_De_DT_4,feas_De_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 50);
+[K_De_DT_5,rho_De_DT_5,feas_De_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 1, 100);
+[K_De_DT_6,rho_De_DT_6,feas_De_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucDe, 2, 100);
 
 k=0;
 for k=1:Tfinal/h
@@ -353,10 +353,10 @@ end
 %% Distributed 2
 [K_Di2_DT_1,rho_Di2_DT_1,feas_Di2_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 0.1);
 [K_Di2_DT_2,rho_Di2_DT_2,feas_Di2_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 0.1);
-[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 5);
-[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 5);
-[K_Di2_DT_5,rho_Di2_DT_5,feas_Di2_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 10);
-[K_Di2_DT_6,rho_Di2_DT_6,feas_Di2_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 10);
+[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 50);
+[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 50);
+[K_Di2_DT_5,rho_Di2_DT_5,feas_Di2_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 100);
+[K_Di2_DT_6,rho_Di2_DT_6,feas_Di2_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 100);
 
 k=0;
 for k=1:Tfinal/h
@@ -512,8 +512,8 @@ end
         title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
         plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
         plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'r')
-        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'g')
-        legend('r = 0.1','r = 5','r = 10')
+        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_5((i)*4-(4-2),:)],'g')
+        legend('r = 0.5','r = 50','r = 100')
  end
  
  figure
@@ -525,5 +525,5 @@ end
         plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'b')
         plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'r')
         plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'g')
-        legend('r = 0.1','r = 5','r = 10')
+        legend('r = 0.5','r = 50','r = 100')
  end

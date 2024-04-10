@@ -37,9 +37,9 @@ if ContStruc==ones(N,N)
     Bw=eye(20);  
     S=sdpvar(ntot+mtot); %25x25
     
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 1 0; 0 0 0 1];
     Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(5);
+    R = eye(5);
     if v == 1
         Cq = sqrt(Q);
         Dq = sqrt(R);
@@ -67,9 +67,9 @@ else
 
     S=sdpvar(ntot+mtot); %25x25
 
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 1 0; 0 0 0 1];
     Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(5);
+    R = eye(5);
     if v == 1
         Cq = sqrt(Q);
         Dq = sqrt(R);
@@ -99,7 +99,7 @@ end
 
 
 LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S   Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
-options=sdpsettings('solver','sdpt3');
+options=sdpsettings('solver','sedumi');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   
 feas2=J.problem;

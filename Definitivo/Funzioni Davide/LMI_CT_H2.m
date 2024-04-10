@@ -39,37 +39,31 @@ if ContStruc==ones(N,N)
     
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
+    R = (0.01^2)*eye(mtot);
     Cq = sqrt(Q);
-    %Cq = eye(20)
-    r = 0.5;
+    Dq = sqrt(R);
+    r = 2;
+    Ch=[Cq; zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq];
 
-    Ch=[Cq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
-    %Ch=[sdpvar(ntot);zeros(mtot,ntot)];
-    %Dh=[zeros(ntot,mtot);sdpvar(mtot)];
-
-    %Q=sdpvar(ntot);
-    %R=sdpvar(mtot);
-    %     
 else
     % Decentralized/distributed design
     Y=[];
     L=sdpvar(mtot,ntot);
 
-    Bw=eye(20); %hopefully same thing as before
+    Bw=eye(20);
 
-    S=sdpvar(ntot+mtot); %25x25
+    S=sdpvar(ntot+mtot);
 
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
+    R = (0.01^2)*eye(mtot);
     Cq = sqrt(Q);
-    % Cq = eye(20)
-    r = 0.5;
+    Dq = sqrt(R);
+    r = 2;
 
-    Ch=[Cq;zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
+    Ch=[Cq;zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq];
 
     minc=0;
     for i=1:N
@@ -84,7 +78,6 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
 
 
 LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S   Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];

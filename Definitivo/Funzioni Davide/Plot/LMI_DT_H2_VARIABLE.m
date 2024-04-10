@@ -37,9 +37,9 @@ if ContStruc==ones(N,N)
     Gw=eye(20);  
     S=sdpvar(ntot+mtot); %25x25
     
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 1 0; 0 0 0 1];
     Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(5);
+    R = eye(5);
     if v == 1
         Hq = sqrt(Q);
         Nq = sqrt(R);
@@ -50,7 +50,7 @@ if ContStruc==ones(N,N)
     end
 
     Hh=[Hq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Nh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
 else
     % Decentralized/distributed design
@@ -61,9 +61,9 @@ else
 
     S=sdpvar(ntot+mtot); %25x25
 
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 1 0; 0 0 0 1];
     Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(5);
+    R = eye(5);
     if v == 1
         Hq = sqrt(Q);
         Nq = sqrt(R);
@@ -74,7 +74,7 @@ else
     end
 
     Hh=[Hq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Nh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
     minc=0;
     for i=1:N
@@ -93,8 +93,8 @@ end
 
 
 LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'   Gtot*L;
-            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
-options=sdpsettings('solver','sdpt3');
+            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Nh*L;  L'*Nh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
+options=sdpsettings('solver','sedumi');
 Obj=trace(S);
 J=optimize(LMIconstr,Obj,options);   
 feas2=J.problem;
