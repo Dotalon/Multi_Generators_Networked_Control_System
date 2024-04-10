@@ -39,16 +39,18 @@ if ContStruc==ones(N,N)
     
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
-
+    R = (0.01^2)*eye(5);
     if v == 1
         Cq = sqrt(Q);
+        Dq = sqrt(R);
     end
     if v == 2 
         Cq = eye(20);
+        Dq = eye(5);
     end
 
     Ch=[Cq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Dh=r*[zeros(ntot,mtot);Dq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
     %Ch=[sdpvar(ntot);zeros(mtot,ntot)];
     %Dh=[zeros(ntot,mtot);sdpvar(mtot)];
@@ -67,17 +69,18 @@ else
 
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
-
+    R = (0.01^2)*eye(5);
     if v == 1
         Cq = sqrt(Q);
+        Dq = sqrt(R);
     end
-    if v == 2
+    if v == 2 
         Cq = eye(20);
+        Dq = eye(5);
     end
 
-    Ch=[Cq;zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
+    Ch=[Cq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
+    Dh=r*[zeros(ntot,mtot);Dq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
     minc=0;
     for i=1:N

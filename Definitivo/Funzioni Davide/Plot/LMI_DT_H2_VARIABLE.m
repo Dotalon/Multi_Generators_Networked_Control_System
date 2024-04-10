@@ -39,16 +39,18 @@ if ContStruc==ones(N,N)
     
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
-    
+    R = (0.01^2)*eye(5);
     if v == 1
         Hq = sqrt(Q);
+        Nq = sqrt(R);
     end
     if v == 2 
-        Hq = eye(20);
+        Hq = eye(20)
+        Nq = eye(5);
     end
 
     Hh=[Hq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
+    Dh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
 else
     % Decentralized/distributed design
@@ -61,17 +63,18 @@ else
 
     q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
     Q = blkdiag(q, q, q, q, q);
-
+    R = (0.01^2)*eye(5);
     if v == 1
         Hq = sqrt(Q);
+        Nq = sqrt(R);
     end
     if v == 2 
-        Hq = eye(20);
+        Hq = eye(20)
+        Nq = eye(5);
     end
 
-    Hh=[Hq;zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
+    Hh=[Hq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
+    Dh=r*[zeros(ntot,mtot);Nq]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
 
     minc=0;
     for i=1:N

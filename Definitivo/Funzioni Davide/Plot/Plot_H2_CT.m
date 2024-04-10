@@ -152,7 +152,7 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Centralized} with Q=D'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
         plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'b')
         plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'r')
         plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'g')
@@ -507,3 +507,52 @@ end
  %        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
+
+%%
+figure
+for i=1:N
+        subplot(N,1,1+((i-1)))
+        hold on
+        grid on
+        title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
+        plot(T,[x_C_H2_CT_1((i)*4-(4-2),:)],'b')
+        plot(T,[x_C_H2_CT_3((i)*4-(4-2),:)],'r')
+        plot(T,[x_C_H2_CT_6((i)*4-(4-2),:)],'g')
+        legend('r = 0.5','r = 2','r = 10')
+end
+
+figure
+for i=1:N
+        subplot(N,1,1+((i-1)))
+        hold on
+        grid on
+        title(['\Delta\omega_{',num2str(i),'}_{,Decentralized}'])
+        plot(T,[x_De_H2_CT_1((i)*4-(4-2),:)],'b')
+        plot(T,[x_De_H2_CT_3((i)*4-(4-2),:)],'r')
+        plot(T,[x_De_H2_CT_6((i)*4-(4-2),:)],'g')
+        legend('r = 0.5','r = 2','r = 10')
+end
+
+figure
+for i=1:N
+        subplot(N,1,1+((i-1)))
+        hold on
+        grid on
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1}'])
+        plot(T,[x_Di1_H2_CT_1((i)*4-(4-2),:)],'b')
+        plot(T,[x_Di1_H2_CT_3((i)*4-(4-2),:)],'r')
+        plot(T,[x_Di1_H2_CT_6((i)*4-(4-2),:)],'g')
+        legend('r = 0.5','r = 2','r = 10')
+end
+
+figure
+for i=1:N
+        subplot(N,1,1+((i-1)))
+        hold on
+        grid on
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2}'])
+        plot(T,[x_Di2_H2_CT_1((i)*4-(4-2),:)],'b')
+        plot(T,[x_Di2_H2_CT_3((i)*4-(4-2),:)],'r')
+        plot(T,[x_Di2_H2_CT_6((i)*4-(4-2),:)],'g')
+        legend('r = 0.5','r = 2','r = 10')
+end

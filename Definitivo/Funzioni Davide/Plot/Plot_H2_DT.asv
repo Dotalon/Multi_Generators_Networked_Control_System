@@ -126,7 +126,7 @@ ContStrucDe=diag(ones(N,1));
 
 load('x0.mat')
 %% Centralized
-Tfinal=10;
+Tfinal=60;
 T=0:0.01:Tfinal;
 
 [K_C_DT_1,rho_C_DT_1,feas_C_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStrucC, 1, 0.5);
@@ -351,10 +351,10 @@ end
         legend('Q = D','Q = I')
  end
 %% Distributed 2
-[K_Di2_DT_1,rho_Di2_DT_1,feas_Di2_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 0.1);
-[K_Di2_DT_2,rho_Di2_DT_2,feas_Di2_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 0.1);
-[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 5);
-[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 5);
+[K_Di2_DT_1,rho_Di2_DT_1,feas_Di2_DT_1]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 0.5);
+[K_Di2_DT_2,rho_Di2_DT_2,feas_Di2_DT_2]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 0.5);
+[K_Di2_DT_3,rho_Di2_DT_3,feas_Di2_DT_3]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 2);
+[K_Di2_DT_4,rho_Di2_DT_4,feas_Di2_DT_4]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 2);
 [K_Di2_DT_5,rho_Di2_DT_5,feas_Di2_DT_5]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 1, 10);
 [K_Di2_DT_6,rho_Di2_DT_6,feas_Di2_DT_6]=LMI_DT_H2_VARIABLE(F,Gdec,Hdec,N,ContStruc_REBiStar, 2, 10);
 
@@ -503,27 +503,3 @@ end
  %        plot([0:h:Tfinal],[x0(i*4-2),x_Di2_H2_DT_6((i)*4-(4-2),:)],'g')
  %        legend('C','De', 'Di1', 'Di2')
  % end
-%%
- figure
- for i=1:N
-        subplot(N,1,1+((i-1)))
-        hold on
-        grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Centralized}'])
-        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_1((i)*4-(4-2),:)],'b')
-        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_3((i)*4-(4-2),:)],'r')
-        plot([0:h:Tfinal],[x0(i*4-2),x_C_H2_DT_6((i)*4-(4-2),:)],'g')
-        legend('r = 0.1','r = 5','r = 10')
- end
- 
- figure
- for i=1:N
-        subplot(N,1,1+((i-1)))
-        hold on
-        grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Decentralized}'])
-        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_1((i)*4-(4-2),:)],'b')
-        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_3((i)*4-(4-2),:)],'r')
-        plot([0:h:Tfinal],[x0(i*4-2),x_De_H2_DT_6((i)*4-(4-2),:)],'g')
-        legend('r = 0.1','r = 5','r = 10')
- end
