@@ -204,7 +204,7 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Distributed_1}'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1}'])
         plot(T,[x_Di1_REGION_CT_1((i)*4-(4-2),:)],'m')
         plot(T,[x_Di1_REGION_CT_2((i)*4-(4-2),:)],'r')
         plot(T,[x_Di1_REGION_CT_3((i)*4-(4-2),:)],'g')
@@ -232,7 +232,7 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Distributed_2}'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2}'])
         plot(T,[x_Di2_REGION_CT_1((i)*4-(4-2),:)],'m')
         plot(T,[x_Di2_REGION_CT_2((i)*4-(4-2),:)],'r')
         plot(T,[x_Di2_REGION_CT_3((i)*4-(4-2),:)],'g')

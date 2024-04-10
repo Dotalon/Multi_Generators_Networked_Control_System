@@ -201,7 +201,7 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Distributed_1}'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 1}'])
         plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_1((i)*4-(4-2),:)],'m')
         plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_2((i)*4-(4-2),:)],'r')
         plot([0:h:Tfinal],[x0(i*4-2),x_Di1_DISK_DT_3((i)*4-(4-2),:)],'g')
@@ -228,7 +228,7 @@ end
         subplot(N,1,1+((i-1)))
         hold on
         grid on
-        title(['\Delta\omega_{',num2str(i),'}_{,Distributed_2}'])
+        title(['\Delta\omega_{',num2str(i),'}_{,Distributed 2}'])
         plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_1((i)*4-(4-2),:)],'m')
         plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_2((i)*4-(4-2),:)],'r')
         plot([0:h:Tfinal],[x0(i*4-2),x_Di2_DISK_DT_3((i)*4-(4-2),:)],'g')
