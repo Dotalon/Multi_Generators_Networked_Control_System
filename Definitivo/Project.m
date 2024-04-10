@@ -229,7 +229,7 @@ end
                 end
         end
      end   
-     %% Grafici sovrapposti sample
+     %% Grafici sovrapposti open loop CT
  
              figure
              for i=1:N
@@ -261,8 +261,10 @@ ContStrucDe=diag(ones(N,1));
 [DFMDe]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n) %No dec FM DT
 
 %% Distributed Fixed Modes
+%initially uses ContStrucDi=ContStruc_Pij (see slides). The comparison with
+%other structure is at the end of the program
 rounding_n=3;
-ContStrucDi=[ 1 1 0 0 0
+ContStrucDi=[    1 1 0 0 0
                  1 1 1 0 1
                  0 1 1 1 0
                  0 0 1 1 1 
@@ -1682,7 +1684,7 @@ end
         legend('Stability Distributed REBiStar CT')
  end
 
- %control action of stabilizibng
+ %control action of stabilizing
      figure
      for i=1:N
             subplot(N,2,1+(2*(i-1)))
@@ -1695,7 +1697,7 @@ end
             hold on
             grid on
             title(['u_{',num2str(i),'}_{,REBistar}'])
-            plot(T,u_Di_REBistar_STABILITY_CT(i,:),'k')
+            plot(T,u_Di_REBiStar_STABILITY_CT(i,:),'k')
             
         
      end
@@ -1729,7 +1731,7 @@ end
             hold on
             grid on
             title(['u_{',num2str(i),'}_{,REBistar}'])
-            plot(T,u_Di_REBistar_TRESH_CT(i,:),'k')      
+            plot(T,u_Di_REBiStar_TRESH_CT(i,:),'k')      
         
      end
         
@@ -1761,7 +1763,7 @@ end
             hold on
             grid on
             title(['u_{',num2str(i),'}_{,REBistar}'])
-            plot(T,u_Di_REBistar_Disk_CT(i,:),'k')      
+            plot(T,u_Di_REBiStar_Disk_CT(i,:),'k')      
         
      end
 
