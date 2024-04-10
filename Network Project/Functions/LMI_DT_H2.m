@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_DT_EIG_CIRCLE(F,G,H,N,ContStruc)
+function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -24,8 +24,8 @@ for i=1:N
     n(i)=size(H{i},1);
     Gtot=[Gtot,G{i}];
 end
-ntot=size(F,1);
-mtot=sum(m);
+ntot=size(F,1);       
+mtot=sum(m);          
 
 yalmip clear
 
@@ -33,10 +33,40 @@ if ContStruc==ones(N,N)
     % Centralized design
     P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
+
+    Gw=eye(20);  
+    S=sdpvar(ntot+mtot); 
+    
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    Q = blkdiag(q, q, q, q, q);
+    Hq = sqrt(Q);
+    R = eye(mtot);
+    Dq = sqrt(R);
+    r = 2;
+
+    Hh=[Hq; zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq]; 
+
 else
     % Decentralized/distributed design
     P=[];
     L=sdpvar(mtot,ntot);
+
+    Gw=eye(20);
+
+    S=sdpvar(ntot+mtot);
+
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    Q = blkdiag(q, q, q, q, q);
+    Hq = sqrt(Q);
+    R = eye(mtot);
+    Dq = sqrt(R);
+    r = 2;
+
+    Hh=[Hq; zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq]; 
+
+
     minc=0;
     for i=1:N
         P=blkdiag(P,sdpvar(n(i)));
@@ -50,25 +80,13 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
-rho=0.4;
-alpha=-0.5;
-kL=sdpvar(1,1);
-kP=sdpvar(1,1);
 
-LMIconstr=[[(rho^2-alpha^2)*P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-alpha*(P*F'+F*P+L'*Gtot'+Gtot*L)     Gtot*L;
-            L'*Gtot'                               P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
 
-LMIconstr=LMIconstr+[[kL*eye(ntot)   L'; 
-                        L             eye(mtot)]>=1e-2*eye(ntot+mtot)];
-
-LMIconstr=LMIconstr+[[kP*eye(ntot)  eye(ntot); 
-                        eye(ntot)           P]>=1e-2*eye(ntot*2)];
-
-options=sdpsettings('solver','sedumi');
-Cost_funct=0.01*kL+10*kP;
-% Obj=norm(L,2)   %largest singular value of matrix L=K*Y
-J=optimize(LMIconstr,Cost_funct,options);  
+LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'   Gtot*L;
+            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
+options=sdpsettings('solver','sdpt3');
+Obj=trace(S);
+J=optimize(LMIconstr,Obj,options);   
 feas2=J.problem;
 L=double(L);
 P=double(P);

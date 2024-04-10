@@ -1,4 +1,4 @@
-function [K,rho,feas]=LMI_CT_EIG_CIRCLE(A,B,C,N,ContStruc)
+function [K2,rho2,feas2]=LMI_DT_EIG_CIRCLE(F,G,H,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -18,13 +18,13 @@ function [K,rho,feas]=LMI_CT_EIG_CIRCLE(A,B,C,N,ContStruc)
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
 
-Btot=[];
+Gtot=[];
 for i=1:N
-    m(i)=size(B{i},2);
-    n(i)=size(C{i},1);
-    Btot=[Btot,B{i}];
+    m(i)=size(G{i},2);
+    n(i)=size(H{i},1);
+    Gtot=[Gtot,G{i}];
 end
-ntot=size(A,1);
+ntot=size(F,1);
 mtot=sum(m);
 
 yalmip clear
@@ -50,17 +50,28 @@ else
         minc=minc+m(i);
     end  
 end
-alpha=2;
-r=0.6;
 
-LMIconstr=[[(r^2-alpha^2)*P-A*P*A'-A*L'*Btot'-Btot*L*A'-alpha*(A*P+P*A'+Btot*L+L'*Btot')    Btot*L;
-             L'*Btot'    P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
+rho=0.4;
+alpha=-0.5;
+kL=sdpvar(1,1);
+kP=sdpvar(1,1);
 
-options=sdpsettings('solver','sdpt3');
-J=optimize(LMIconstr,[],options);
-feas=J.problem;
+LMIconstr=[[(rho^2-alpha^2)*P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-alpha*(P*F'+F*P+L'*Gtot'+Gtot*L)     Gtot*L;
+            L'*Gtot'                               P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
+
+LMIconstr=LMIconstr+[[kL*eye(ntot)   L'; 
+                        L             eye(mtot)]>=1e-2*eye(ntot+mtot)];
+
+LMIconstr=LMIconstr+[[kP*eye(ntot)  eye(ntot); 
+                        eye(ntot)           P]>=1e-2*eye(ntot*2)];
+
+options=sdpsettings('solver','sedumi');
+Cost_funct=0.01*kL+10*kP;
+
+J=optimize(LMIconstr,Cost_funct,options);  
+feas2=J.problem;
 L=double(L);
 P=double(P);
 
-K=L/P;
-rho=max(real(eig(A+Btot*K)));
+K2=L/P;
+rho2=max(real(eig(F+Gtot*K2)));

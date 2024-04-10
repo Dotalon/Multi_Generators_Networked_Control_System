@@ -50,14 +50,14 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
+
 rho=0.4;
 
 LMIconstr=[[rho^2*P-F*P*F'-F*L'*Gtot'-Gtot*L*F'     Gtot*L;
             L'*Gtot'                               P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sdpt3');
-% Obj=norm(L,2)   %largest singular value of matrix L=K*Y
-J=optimize(LMIconstr,[],options);   %don't really understand why it crashes if I specify that I want to minimize smth about L, as in his examples
+
+J=optimize(LMIconstr,[],options); 
 feas2=J.problem;
 L=double(L);
 P=double(P);

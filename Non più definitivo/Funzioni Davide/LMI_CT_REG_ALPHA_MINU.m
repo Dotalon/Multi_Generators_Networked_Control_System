@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_CT_H2(A,B,C,N,ContStruc)
+function [K4,rho4,feas4,kappaL]=LMI_CT_REG_ALPHA_MINU(A,B,C,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -24,8 +24,8 @@ for i=1:N
     n(i)=size(C{i},1);
     Btot=[Btot,B{i}];
 end
-ntot=size(A,1);        %20
-mtot=sum(m);           %5
+ntot=size(A,1);
+mtot=sum(m);
 
 yalmip clear
 
@@ -33,38 +33,10 @@ if ContStruc==ones(N,N)
     % Centralized design
     Y=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
-
-    Bw=eye(20);  
-    S=sdpvar(ntot+mtot); %25x25
-    
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
-    Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(mtot);
-    Cq = sqrt(Q);
-    Dq = sqrt(R);
-    r = 2;
-    Ch=[Cq; zeros(mtot,ntot)];
-    Dh=r*[zeros(ntot,mtot);Dq];
-
 else
     % Decentralized/distributed design
     Y=[];
     L=sdpvar(mtot,ntot);
-
-    Bw=eye(20);
-
-    S=sdpvar(ntot+mtot);
-
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
-    Q = blkdiag(q, q, q, q, q);
-    R = (0.01^2)*eye(mtot);
-    Cq = sqrt(Q);
-    Dq = sqrt(R);
-    r = 2;
-
-    Ch=[Cq;zeros(mtot,ntot)];
-    Dh=r*[zeros(ntot,mtot);Dq];
-
     minc=0;
     for i=1:N
         Y=blkdiag(Y,sdpvar(n(i)));
@@ -74,19 +46,40 @@ else
                 L(minc+1:minc+m(i),ninc+1:ninc+n(j))=zeros(m(i),n(j));
             end
             ninc=ninc+n(j);
+            
         end
         minc=minc+m(i);
     end  
 end
 
+theta=pi/6;
+alpha=0.4;
 
-LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+Bw*Bw'<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)]+[[S   Ch*Y+Dh*L;  L'*Dh'+Y*Ch'  Y]>=1e-2*eye(ntot+mtot*5)];
-options=sdpsettings('solver','sdpt3');
-Obj=trace(S);
-J=optimize(LMIconstr,Obj,options);   
-feas2=J.problem;
+kL=sdpvar(1,1);
+kY=sdpvar(1,1);
+
+LMIconstr=[[sin(theta)*((A*Y+Y*A')+(Btot*L+L'*Btot'))    cos(theta)*(A*Y-Y*A'+Btot*L-L'*Btot');
+            cos(theta)*(-A*Y+Y*A'-Btot*L+L'*Btot')      sin(theta)*(A*Y+Y*A'+Btot*L+L'*Btot')]<=(-1e-2*eye(2*ntot))];
+
+LMIconstr=LMIconstr+[Y>=1e-2*eye(ntot)];
+
+
+LMIconstr=LMIconstr+[Y*A'+A*Y+Btot*L+L'*Btot'+2*alpha*Y<=-1e-2*eye(ntot)];
+
+LMIconstr=LMIconstr+[[kL*eye(ntot)   L'; 
+                        L             eye(mtot)]>=1e-2*eye(ntot+mtot)];
+
+LMIconstr=LMIconstr+[[kY*eye(ntot)  eye(ntot); 
+                        eye(ntot)           Y]>=1e-2*eye(ntot*2)];
+
+
+Cost_funct=0.01*kL+10*kY;  
+options=sdpsettings('solver','sedumi');
+J=optimize(LMIconstr,Cost_funct,options);   
+feas4=J.problem;
 L=double(L);
 Y=double(Y);
 
-K2=L/Y;
-rho2=max(real(eig(A+Btot*K2)));
+K4=L/Y;
+rho4=max(real(eig(A+Btot*K4)));
+kappaL=double(kL);

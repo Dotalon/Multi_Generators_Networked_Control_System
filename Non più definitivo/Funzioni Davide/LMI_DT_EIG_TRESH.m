@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
+function [K2,rho2,feas2]=LMI_DT_EIG_TRESH(F,G,H,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -24,8 +24,8 @@ for i=1:N
     n(i)=size(H{i},1);
     Gtot=[Gtot,G{i}];
 end
-ntot=size(F,1);        %20
-mtot=sum(m);           %5
+ntot=size(F,1);
+mtot=sum(m);
 
 yalmip clear
 
@@ -33,38 +33,10 @@ if ContStruc==ones(N,N)
     % Centralized design
     P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
-
-    Gw=eye(20);  
-    S=sdpvar(ntot+mtot); %25x25
-    
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
-    Q = blkdiag(q, q, q, q, q);
-    Hq = sqrt(Q);
-    %Hq = eye(20)
-    r = 0.5;
-
-    Hh=[Hq; zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
 else
     % Decentralized/distributed design
     P=[];
     L=sdpvar(mtot,ntot);
-
-    Gw=eye(20); %hopefully same thing as before
-
-    S=sdpvar(ntot+mtot); %25x25
-
-    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
-    Q = blkdiag(q, q, q, q, q);
-    Hq = sqrt(Q);
-    % Hq = eye(20)
-    r = 0.5;
-
-    Hh=[Hq;zeros(mtot,ntot)]; % 25x20 matrix, first 20x20 is I (Q=I), the rest is zeros
-    Dh=r*[zeros(ntot,mtot);eye(mtot)]; % 25x5 matrix, first 20x5 is zeros, the rest is a 5x5 identity (R=I)
-
-
     minc=0;
     for i=1:N
         P=blkdiag(P,sdpvar(n(i)));
@@ -78,14 +50,14 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
 
+rho=0.4;
 
-LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'   Gtot*L;
-            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
+LMIconstr=[[rho^2*P-F*P*F'-F*L'*Gtot'-Gtot*L*F'     Gtot*L;
+            L'*Gtot'                               P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)];
 options=sdpsettings('solver','sdpt3');
-Obj=trace(S);
-J=optimize(LMIconstr,Obj,options);   
+
+J=optimize(LMIconstr,[],options); 
 feas2=J.problem;
 L=double(L);
 P=double(P);

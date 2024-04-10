@@ -54,7 +54,7 @@ end
 
 theta=pi/6;
 alpha=0.4;
-%alpha=2.2;
+
 kL=sdpvar(1,1);
 kY=sdpvar(1,1);
 

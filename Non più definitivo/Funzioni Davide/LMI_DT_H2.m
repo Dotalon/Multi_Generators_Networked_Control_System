@@ -1,4 +1,4 @@
-function [K2,rho2,feas2]=LMI_CT_EIG_TRESH(A,B,C,N,ContStruc)
+function [K2,rho2,feas2]=LMI_DT_H2(F,G,H,N,ContStruc)
 % Computes, using LMIs, the distributed "state feedback" control law for the continuous-time system, with reference to the control
 % information structure specified by 'ContStruc'.
 %
@@ -18,28 +18,58 @@ function [K2,rho2,feas2]=LMI_CT_EIG_TRESH(A,B,C,N,ContStruc)
 % C{N}']=I
 % - feas: feasibility of the LMI problem (=0 if yes)
 
-Btot=[];
+Gtot=[];
 for i=1:N
-    m(i)=size(B{i},2);
-    n(i)=size(C{i},1);
-    Btot=[Btot,B{i}];
+    m(i)=size(G{i},2);
+    n(i)=size(H{i},1);
+    Gtot=[Gtot,G{i}];
 end
-ntot=size(A,1);
-mtot=sum(m);
+ntot=size(F,1);       
+mtot=sum(m);          
 
 yalmip clear
 
 if ContStruc==ones(N,N)
     % Centralized design
-    Y=sdpvar(ntot);
+    P=sdpvar(ntot);
     L=sdpvar(mtot,ntot);
+
+    Gw=eye(20);  
+    S=sdpvar(ntot+mtot); 
+    
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    Q = blkdiag(q, q, q, q, q);
+    Hq = sqrt(Q);
+    R = eye(mtot);
+    Dq = sqrt(R);
+    r = 2;
+
+    Hh=[Hq; zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq]; 
+
 else
     % Decentralized/distributed design
-    Y=[];
+    P=[];
     L=sdpvar(mtot,ntot);
+
+    Gw=eye(20);
+
+    S=sdpvar(ntot+mtot);
+
+    q = [3600 0 0 0; 0 3600 0 0; 0 0 0.01^2 0; 0 0 0 0.01^2];
+    Q = blkdiag(q, q, q, q, q);
+    Hq = sqrt(Q);
+    R = eye(mtot);
+    Dq = sqrt(R);
+    r = 2;
+
+    Hh=[Hq; zeros(mtot,ntot)];
+    Dh=r*[zeros(ntot,mtot);Dq]; 
+
+
     minc=0;
     for i=1:N
-        Y=blkdiag(Y,sdpvar(n(i)));
+        P=blkdiag(P,sdpvar(n(i)));
         ninc=0;
         for j=1:N
             if ContStruc(i,j)==0
@@ -50,16 +80,16 @@ else
         minc=minc+m(i);
     end  
 end
-% N=[]
-alpha=1.4;
 
-LMIconstr=[Y*A'+A*Y+Btot*L+L'*Btot'+2*alpha*Y<=-1e-2*eye(ntot)]+[Y>=1e-2*eye(ntot)];
+
+LMIconstr=[[P-F*P*F'-F*L'*Gtot'-Gtot*L*F'-Gw*Gw'   Gtot*L;
+            L'*Gtot'                           P]>=1e-2*eye(ntot*2)]+[P>=1e-2*eye(ntot)]+[[S Hh*P+Dh*L;  L'*Dh'+P*Hh'  P]>=1e-2*eye(ntot+mtot*5)];
 options=sdpsettings('solver','sdpt3');
-% Obj=norm(L,2)   %largest singular value of matrix L=K*Y
-J=optimize(LMIconstr,[],options);   %don't really understand why it crashes if I specify that I want to minimize smth about L, as in his examples
+Obj=trace(S);
+J=optimize(LMIconstr,Obj,options);   
 feas2=J.problem;
 L=double(L);
-Y=double(Y);
+P=double(P);
 
-K2=L/Y;
-rho2=max(real(eig(A+Btot*K2)));
+K2=L/P;
+rho2=max(real(eig(F+Gtot*K2)));
