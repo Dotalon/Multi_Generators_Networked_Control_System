@@ -741,7 +741,7 @@ figure
         legend('Disk Eig Distributed CT')
  end
 
-%% Region CT (Mixed_LMI)
+%% Region CT (Mixed_LMI) (see functio LMI_CT_REG_ALPHA_MINU)
 for v=1:n_states
     switch v
          case 1
@@ -776,21 +776,21 @@ for v=1:n_states
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
                     plot(T,[x_C_REGION_CT((i)*4-(4-v),:)],'k')
-                    legend('Region Eig Centralized CT')
+                    %legend('Region Eig Centralized CT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_REGION_CT((i)*4-(4-v),:)],'k')
-                    legend('Region Eig Decentralized CT')
+                    %legend('Region Eig Decentralized CT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
                     plot(T,[x_Di_REGION_CT((i)*4-(4-v),:)],'k')
-                    legend('Region Eig Distributed CT')
+                    %legend('Region Eig Distributed CT')
              end
          case 3
              figure
@@ -850,21 +850,21 @@ figure
         grid on
         title(['u_{',num2str(i),'}_{,C}'])
         plot(T,[u_C_REGION_CT(i,:)],'k')
-        legend('Region Eig Centralized CT')
+        %legend('Region Eig Centralized CT')
     
         subplot(N,3,2+(3*(i-1)))
         hold on
         grid on
         title(['u_{',num2str(i),'}_{,De}'])
         plot(T,[u_De_REGION_CT(i,:)],'k')
-        legend('Region Eig Decentralized CT')
+        %legend('Region Eig Decentralized CT')
     
         subplot(N,3,3+(3*(i-1)))
         hold on
         grid on
         title(['u_{u',num2str(i),'}_{,Di}'])
         plot(T,[u_Di_REGION_CT(i,:)],'k')
-        legend('Region Eig Distributed CT')
+        %legend('Region Eig Distributed CT')
  end
 
 %% H2 CT
