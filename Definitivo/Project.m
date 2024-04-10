@@ -262,14 +262,14 @@ ContStrucDe=diag(ones(N,1));
 
 %% Distributed Fixed Modes
 rounding_n=3;
-ContStruc_Pij=[ 1 1 0 0 0
+ContStrucDi=[ 1 1 0 0 0
                  1 1 1 0 1
                  0 1 1 1 0
                  0 0 1 1 1 
                  0 1 0 1 1];
 
-[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_Pij, rounding_n) % no centralized fixed modes CT
-[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_Pij, rounding_n) % no centralized fixed modes DT
+[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDi, rounding_n) % no centralized fixed modes CT
+[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDi, rounding_n) % no centralized fixed modes DT
 
 %% #### Conituous time Control Gains ####
 % Centralized
@@ -370,21 +370,21 @@ for v=1:n_states
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,C}'])
                     plot(T,[x_C_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Centralized CT')
+                    %legend('Stability Centralized CT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,De}'])
                     plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Decentralized CT')
+                    %legend('Stability Decentralized CT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\theta_{',num2str(i),'}_{,Di}'])
                     plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Distributed CT')
+                    %legend('Stability Distributed CT')
              end
          case 2
              figure
@@ -394,21 +394,21 @@ for v=1:n_states
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
                     plot(T,[x_C_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Centralized CT')
+                    %legend('Stability Centralized CT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Decentralized CT')
+                    %legend('Stability Decentralized CT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
                     plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Distributed CT')
+                    %legend('Stability Distributed CT')
              end
               
          case 3
@@ -419,21 +419,21 @@ for v=1:n_states
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,C}'])
                     plot(T,[x_C_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Centralized CT')
+                    %legend('Stability Centralized CT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Decentralized CT')
+                    %legend('Stability Decentralized CT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{m,',num2str(i),'}_{,Di}'])
                     plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Distributed CT')
+                    %legend('Stability Distributed CT')
              end
          case 4
              figure
@@ -443,21 +443,21 @@ for v=1:n_states
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,C}'])
                     plot(T,[x_C_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Centralized CT')
+                    %legend('Stability Centralized CT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,De}'])
                     plot(T,[x_De_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Decentralized CT')
+                    %legend('Stability Decentralized CT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\DeltaP_{v,',num2str(i),'}_{,Di}'])
                     plot(T,[x_Di_STABILITY_CT((i)*4-(4-v),:)],'k')
-                    legend('Stability Distributed CT')
+                    %legend('Stability Distributed CT')
              end
     end
 end   
@@ -1038,6 +1038,7 @@ for v=1:n_states
     switch v
          case 1
              figure
+       
              for i=1:N
                     subplot(N,3,1+(3*(i-1)))
                     hold on
@@ -1063,26 +1064,27 @@ for v=1:n_states
          case 2
              figure
              for i=1:N
+                 
                     subplot(N,3,1+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_STABILITY_DT((i)*4-(4-v),:)],'k')
-                    legend('Stability Centralized DT')
+                    %legend('Stability Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_STABILITY_DT((i)*4-(4-v),:)],'k')
-                    legend('Stability Decentralized DT')
+                    %legend('Stability Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_STABILITY_DT((i)*4-(4-v),:)],'k')
-                    legend('Stability Distributed DT')
+                    %legend('Stability Distributed DT')
              end
          case 3
              figure
