@@ -1625,6 +1625,20 @@ for t=T
     x_Di_REBiStar_H2_CT(:,k)=expm((A+B*K_Di5_REBiStar_CT)*t)*x0;
 end
 
+%now compute the control actions:
+    u_Di_Pij_STABILITY_CT = K_Di_Pij_CT*x_Di_Pij_STABILITY_CT;
+    u_Di_Pij_TRESH_CT = K_Di2_Pij_CT*x_Di_Pij_TRESH_CT;
+    u_Di_Pij_DISK_CT = K_Di3_Pij_CT*x_Di_Pij_DISK_CT;
+    u_Di_Pij_REG_ALPHA_MINU_CT = K_Di4_Pij_CT*x_Di_Pij_REG_ALPHA_MINU_CT;
+    u_Di_Pij_H2_CT = K_Di5_Pij_CT*x_Di_Pij_H2_CT;
+
+    u_Di_REBiStar_STABILITY_CT = K_Di_REBiStar_CT*x_Di_REBiStar_STABILITY_CT;
+    u_Di_REBiStar_TRESH_CT = K_Di2_REBiStar_CT*x_Di_REBiStar_TRESH_CT;
+    u_Di_REBiStar_DISK_CT = K_Di3_REBiStar_CT*x_Di_REBiStar_DISK_CT;
+    u_Di_REBiStar_REG_ALPHA_MINU_CT = K_Di4_REBiStar_CT*x_Di_REBiStar_REG_ALPHA_MINU_CT;
+    u_Di_REBiStar_H2_CT = K_Di5_REBiStar_CT*x_Di_REBiStar_H2_CT;
+
+
 for k=1:Tfinal/h
     x_Di_Pij_STABILITY_DT(:,k)=((F+G*K_Di_Pij_DT).^k)*x0;
     x_Di_Pij_TRESH_DT(:,k)=((F+G*K_Di2_Pij_DT).^k)*x0;
@@ -1636,6 +1650,19 @@ for k=1:Tfinal/h
     x_Di_REBiStar_DISK_DT(:,k)=((F+G*K_Di3_REBiStar_DT).^k)*x0;
     x_Di_REBiStar_H2_DT(:,k)=((F+G*K_Di5_REBiStar_DT).^k)*x0;
 end
+
+%now compute the control actions:
+
+    u_Di_Pij_STABILITY_DT = K_Di_Pij_DT*x_Di_Pij_STABILITY_DT;
+    u_Di_Pij_TRESH_DT = K_Di2_Pij_DT*x_Di_Pij_TRESH_DT;
+    u_Di_Pij_DISK_DT = K_Di3_Pij_DT*x_Di_Pij_DISK_DT;
+    u_Di_Pij_H2_DT = K_Di5_Pij_DT*x_Di_Pij_H2_DT;
+
+    u_Di_REBiStar_STABILITY_DT = K_Di_REBiStar_DT*x_Di_REBiStar_STABILITY_DT;
+    u_Di_REBiStar_TRESH_DT = K_Di2_REBiStar_DT*x_Di_REBiStar_TRESH_DT;
+    u_Di_REBiStar_DISK_DT = K_Di3_REBiStar_DT*x_Di_REBiStar_DISK_DT;
+    u_Di_REBiStar_H2_DT = K_Di5_REBiStar_DT*x_Di_REBiStar_H2_DT;
+
 
 %% Continuous Time
  figure
@@ -1655,6 +1682,24 @@ end
         legend('Stability Distributed REBiStar CT')
  end
 
+ %control action of stabilizibng
+     figure
+     for i=1:N
+            subplot(N,2,1+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,Pij}'])
+            plot(T,u_Di_Pij_STABILITY_CT(i,:),'k')
+        
+            subplot(N,2,2+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,REBistar}'])
+            plot(T,u_Di_REBistar_STABILITY_CT(i,:),'k')
+            
+        
+     end
+
  figure
  for i=1:N
         subplot(N,2,1+(2*(i-1)))
@@ -1672,6 +1717,22 @@ end
         legend('Tresh Eig Distributed REBiStar CT')
  end
 
+     figure
+     for i=1:N
+            subplot(N,2,1+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,Pij}'])
+            plot(T,u_Di_Pij_TRESH_CT(i,:),'k')
+        
+            subplot(N,2,2+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,REBistar}'])
+            plot(T,u_Di_REBistar_TRESH_CT(i,:),'k')      
+        
+     end
+        
  figure
  for i=1:N
         subplot(N,2,1+(2*(i-1)))
@@ -1688,6 +1749,21 @@ end
         plot(T,[x_Di_REBiStar_DISK_CT((i)*4-(4-2),:)],'k')
         legend('Disk Eig Distributed REBiStar CT')
  end
+    figure
+     for i=1:N
+            subplot(N,2,1+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,Pij}'])
+            plot(T,u_Di_Pij_Disk_CT(i,:),'k')
+        
+            subplot(N,2,2+(2*(i-1)))
+            hold on
+            grid on
+            title(['u_{',num2str(i),'}_{,REBistar}'])
+            plot(T,u_Di_REBistar_Disk_CT(i,:),'k')      
+        
+     end
 
  figure
  for i=1:N
