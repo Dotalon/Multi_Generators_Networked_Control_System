@@ -741,7 +741,7 @@ figure
         legend('Disk Eig Distributed CT')
  end
 
-%% Region CT
+%% Region CT (Mixed_LMI)
 for v=1:n_states
     switch v
          case 1
@@ -1289,7 +1289,7 @@ figure
         plot([1:h:Tfinal],u_Di_TRESH_DT(i,:),'k')
         legend('Tresh Eig Distributed DT')
  end
-%% Disk DT
+%% Disk (mixed_LMI) DT
 for v=1:n_states
     switch v
          case 1
@@ -1324,21 +1324,21 @@ for v=1:n_states
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,C}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_C_DISK_DT((i)*4-(4-v),:)],'k')
-                    legend('Disk Eig Centralized DT')
+                    %legend('Disk Eig Centralized DT')
                 
                     subplot(N,3,2+(3*(i-1)))
                     hold on
                     grid on
                    title(['\Delta\omega_{m,',num2str(i),'}_{,De}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_De_DISK_DT((i)*4-(4-v),:)],'k')
-                    legend('Disk Eig Decentralized DT')
+                    %legend('Disk Eig Decentralized DT')
                 
                     subplot(N,3,3+(3*(i-1)))
                     hold on
                     grid on
                     title(['\Delta\omega_{',num2str(i),'}_{,Di}'])
                     plot([0:h:Tfinal],[x0(i*4-(4-v)),x_Di_DISK_DT((i)*4-(4-v),:)],'k')
-                    legend('Disk Eig Distributed DT')
+                    %legend('Disk Eig Distributed DT')
              end
          case 3
              figure
@@ -1398,21 +1398,21 @@ figure
         grid on
         title(['u_{',num2str(i),'}_{,C}'])
         plot([1:h:Tfinal],u_C_DISK_DT(i,:),'k')
-        legend('Disk Eig Centralized DT')
+        %legend('Disk Eig Centralized DT')
     
         subplot(N,3,2+(3*(i-1)))
         hold on
         grid on
         title(['u_{',num2str(i),'}_{,De}'])
         plot([1:h:Tfinal],u_De_DISK_DT(i,:),'k')
-        legend('Disk Eig Decentralized DT')
+        %legend('Disk Eig Decentralized DT')
     
         subplot(N,3,3+(3*(i-1)))
         hold on
         grid on
         title(['u_{',num2str(i),'}_{,Di}'])
         plot([1:h:Tfinal],u_Di_DISK_DT(i,:),'k')
-        legend('Disk Eig Distributed DT')
+        %legend('Disk Eig Distributed DT')
  end
 %% H2 DT
 for v=1:n_states
