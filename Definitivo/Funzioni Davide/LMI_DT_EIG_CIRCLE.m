@@ -68,7 +68,7 @@ LMIconstr=LMIconstr+[[kP*eye(ntot)  eye(ntot);
 options=sdpsettings('solver','sedumi');
 Cost_funct=0.01*kL+10*kP;
 % Obj=norm(L,2)   %largest singular value of matrix L=K*Y
-J=optimize(LMIconstr,Cost_funct,options);   %don't really understand why it crashes if I specify that I want to minimize smth about L, as in his examples
+J=optimize(LMIconstr,Cost_funct,options);  
 feas2=J.problem;
 L=double(L);
 P=double(P);
