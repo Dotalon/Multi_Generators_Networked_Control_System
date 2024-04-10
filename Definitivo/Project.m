@@ -260,6 +260,17 @@ ContStrucDe=diag(ones(N,1));
 [CFMDe]=di_fixed_modes(A,Bdec,Cdec,N,ContStrucDe, rounding_n) %No decentralized FM CT =NO FM in general
 [DFMDe]=di_fixed_modes(F,Gdec,Hdec,N,ContStrucDe, rounding_n) %No dec FM DT
 
+%% Distributed Fixed Modes
+rounding_n=3;
+ContStruc_Pij=[ 1 1 0 0 0
+                 1 1 1 0 1
+                 0 1 1 1 0
+                 0 0 1 1 1 
+                 0 1 0 1 1];
+
+[CFMDi]=di_fixed_modes(A,Bdec,Cdec,N,ContStruc_Pij, rounding_n) % no centralized fixed modes CT
+[DFMDi]=di_fixed_modes(F,Gdec,Hdec,N,ContStruc_Pij, rounding_n) % no centralized fixed modes DT
+
 %% #### Conituous time Control Gains ####
 % Centralized
 [K_C_CT,rho_C_CT,feas_C_CT]=LMI_CT_DeDicont(A,Bdec,Cdec,N,ContStrucC); %control gains for stability only
